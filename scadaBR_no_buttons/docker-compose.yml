@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - scada_hmi
+    networks:
+      br_network:
+         ipv4_address: 172.25.0.10
+
+  scada_hmi:
+    build:
+      context: ./scada_hmi_docker
+    container_name: scada_hmi_sswat
+    ports:
+      - "1502:502"
+      - "18080:8080"
+      - "8080:9090"
+    networks:
+      br_network:
+        ipv4_address: 172.25.0.2
+
+  plc1:
+    build:
+      context: ./plc_1_docker
+    container_name: plc1_sswat
+    ports:
+      - "2502:502"
+      - "28080:8080"
+      - "29090:9090"
+    networks:
+      br_network:
+        ipv4_address: 172.25.0.3
+
+  plc2:
+    build:
+      context: ./plc_2_docker
+    container_name: plc2_sswat
+    ports:
+      - "502:502"
+      - "38080:8080"
+      - "39090:9090"
+    networks:
+      br_network:
+        ipv4_address: 172.25.0.4
+
+  plc3:
+    build:
+      context: ./plc_3_docker
+    container_name: plc3_sswat
+    ports:
+      - "4502:502"
+      - "48080:8080"
+      - "49090:9090"
+    networks:
+      br_network:
+        ipv4_address: 172.25.0.5
+
+  simulator:
+    build:
+      context: ./physical_sim_docker
+    container_name: sim_sswat
+    ports:
+      - "5502:502"
+      - "58080:8080"
+      - "59090:9090"
+    networks:
+      br_network:
+        ipv4_address: 172.25.0.6
+
+networks:
+  br_network:
+    name: br_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
