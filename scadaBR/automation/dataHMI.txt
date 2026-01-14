@@ -1349,10 +1349,6 @@
          "tolerance":0.0
       }
    ],
-   "scheduledEvents":[
-   ],
-   "compoundEventDetectors":[
-   ],
    "pointLinks":[
       {
          "xid":"PL_935190",
@@ -1413,6 +1409,26 @@
          "phone":"",
          "receiveOwnAuditEvents":false,
          "username":"admin"
+      },
+      {
+         "dataSourcePermissions":[
+            "DS_177852",
+            "DS_357366",
+            "DS_137260",
+            "DS_710815",
+            "DS_162006",
+            "DS_475917"
+         ],
+         "dataPointPermissions":[
+         ],
+         "admin":false,
+         "disabled":false,
+         "email":"user@flix.pl",
+         "homeUrl":null,
+         "password":"Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+         "phone":"",
+         "receiveOwnAuditEvents":false,
+         "username":"user"
       }
    ],
    "pointHierarchy":[
