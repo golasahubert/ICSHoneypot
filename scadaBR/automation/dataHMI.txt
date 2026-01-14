@@ -262,6 +262,10 @@
             }
          ],
          "sharingUsers":[
+            {
+               "user":"user",
+               "accessType":"SET"
+            }
          ],
          "backgroundFilename":null,
          "name":"HMI SYSTEM",
@@ -1349,6 +1353,10 @@
          "tolerance":0.0
       }
    ],
+   "scheduledEvents":[
+   ],
+   "compoundEventDetectors":[
+   ],
    "pointLinks":[
       {
          "xid":"PL_935190",
@@ -1412,12 +1420,6 @@
       },
       {
          "dataSourcePermissions":[
-            "DS_177852",
-            "DS_357366",
-            "DS_137260",
-            "DS_710815",
-            "DS_162006",
-            "DS_475917"
          ],
          "dataPointPermissions":[
          ],
@@ -1430,8 +1432,6 @@
          "receiveOwnAuditEvents":false,
          "username":"user"
       }
-   ],
-   "pointHierarchy":[
    ],
    "eventHandlers":[
       {
