@@ -5,10 +5,17 @@ cd "$(dirname "$0")"  # Change to the directory of the script
 
 echo "[+] Updating APT and installing required system packages..."
 sudo apt update
-sudo apt install -y python3-venv docker.io
+sudo apt install -y python3-venv docker.io docker-compose
 
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
+
+echo "[+] Ensuring that all docker networks are dead"
+sudo docker-compose down
+sudo docker network prune -f
+
+echo "[+] Restarting Docker"
+sudo systemctl restart docker
 
 echo "[+] Building Docker images..."
 sudo docker-compose up -d --build

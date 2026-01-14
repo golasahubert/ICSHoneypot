@@ -9,7 +9,7 @@ if [ ! -d "venv" ]; then
 fi
 # Step 2: Install dependencies for playwright
 sudo apt install -y python3-venv libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
-libxkbcommon0 libpango-1.0-0 libgbm1 libasound2t64 libxshmfence1 libdrm2 \
+libxkbcommon0 libpango-1.0-0 libgbm1 libasound2 libxshmfence1 libdrm2 \
 libxcomposite1 libxrandr2 libxi6 fonts-liberation
 
 # Step 3: Activate virtual environment
@@ -23,7 +23,7 @@ pip install playwright
 
 # Step 5: Install Playwright browsers
 playwright install
-
+playwright install-deps
 # Step 6: Run the Python automation script
 echo "[+] Running SCADA-BR login script..."
 python login_scada.py
