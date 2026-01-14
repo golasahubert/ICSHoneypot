@@ -7,7 +7,7 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     # 1. Go to login page
-    page.goto("http://localhost:19090/ScadaBR")
+    page.goto("http://localhost:8080/ScadaBR")
 
     # 2. Log in
     page.fill('input[name="username"]', 'admin')
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     page.wait_for_selector("text=Watch List")
 
     # 4. Navigate directly to the import page
-    page.goto("http://localhost:19090/ScadaBR/emport.shtm")
+    page.goto("http://localhost:8080/ScadaBR/emport.shtm")
 
     # 5. Wait for the correct textarea to be present
     page.wait_for_selector("#emportData")
