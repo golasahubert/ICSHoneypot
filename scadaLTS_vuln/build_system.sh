@@ -10,10 +10,16 @@ sudo apt install -y python3-venv docker.io docker-compose
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
 
-echo "[+] Ensuring that previous environment is stopped..."
-sudo bash kill_docker.sh
+echo "[+] Ensuring that all docker networks are dead"
+sudo docker-compose down
+sudo docker network prune -f
 
+echo "[+] Restarting Docker"
+sudo systemctl restart docker
+
+echo "[+] Building Docker images..."
 sudo docker-compose up -d --build
+
 
 echo "[+] Waiting for containers to initialize..."
 sleep 5
