@@ -1,0 +1,43 @@
+{
+    "physic_sim": {
+        "delta_t": 1
+    },
+    "plcs": {
+        "plc1":{
+            "ip": "172.25.0.3",
+            "port": 9999,
+            "registers":{
+                "input_regs":{
+                    "IW0": 35
+                },
+                "output_regs":{
+                    "QX0.0": 0,
+                    "QX0.1": 0
+                }
+            }
+        },
+        "plc2":{
+            "ip": "172.25.0.4",
+            "port": 9999,
+            "registers":{
+                "input_regs":{
+                    "IW0": 0
+                },
+                "output_regs":{
+                }
+            }
+        },
+        "plc3":{
+            "ip": "172.25.0.5",
+            "port": 9999,
+            "registers":{
+                "input_regs":{
+                    "IW0": 0
+                },
+                "output_regs":{
+                    "QX0.0": 0
+                }
+            }
+        }
+    }
+}

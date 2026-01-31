@@ -1,44 +1,52 @@
 version: '3.8'
 
 services:
+  # --- BAZA DANYCH (Serce systemu) ---
   database:
     container_name: lts_mysql
-    image: mysql:8.0
+    image: mysql:5.7
     ports:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
       - MYSQL_DATABASE=scadalts
-    expose: ["3306"]
+      - MYSQL_USER=scadalts
+      - MYSQL_PASSWORD=scadalts
+    # Kluczowe dla ScadaLTS: wyłączenie trybu ścisłego
+    command: --sql_mode="NO_ENGINE_SUBSTITUTION"
     volumes:
-      - ./db_data:/var/lib/mysql:rw
-    command: --default-authentication-plugin=mysql_native_password --log_bin_trust_function_creators=1
+      # Używamy wolumenu Dockera zamiast folderu lokalnego (stabilniej)
+      - db_storage:/var/lib/mysql
     networks:
-      - lts_network
+      lts_network:
+        ipv4_address: 172.25.0.9
+        aliases:
+          - database  # To oszukuje ScadaLTS v2.7.4
 
+  # --- SCADA LTS (Mózg systemu) ---
   scadalts:
     container_name: lts_scadalts
-    image: kamiljarmusik/scadalts-2.6.18-mysql-8
+    image: scadalts/scadalts:v2.7.4
     environment:
-      - CATALINA_OPTS=-Xmx2G -Xms2G
-      - DB_HOST=database
-      - DB_PORT=3306
-      - DB_NAME=scadalts
-      - DB_USER=root
-      - DB_PASS=root
+      - CATALINA_OPTS=-Xmx2G -Xms512m
+      # Konfiguracja połączenia
+      - SCADALTS_DB_HOST=database
+      - SCADALTS_DB_PORT=3306
+      - SCADALTS_DB_NAME=scadalts
+      - SCADALTS_DB_USER=scadalts
+      - SCADALTS_DB_PASS=scadalts
     ports:
       - "8080:8080"
     depends_on:
       - database
-    expose: ["8080", "8000"]
     volumes:
       - ./tomcat_log:/usr/local/tomcat/logs:rw
     restart: always
     networks:
-      - lts_network
+      lts_network:
+        ipv4_address: 172.25.0.10
 
+  # --- SYMULATORY PLC (Twoja infrastruktura przemysłowa) ---
   plc1:
     build:
       context: ./plc_1_docker
@@ -86,6 +94,10 @@ services:
     networks:
       lts_network:
         ipv4_address: 172.25.0.6
+
+# --- DEFINICJE SIECI I WOLUMENÓW ---
+volumes:
+  db_storage:
 
 networks:
   lts_network:

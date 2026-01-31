@@ -1,0 +1,195 @@
+172.25.0.1 - - [19/Jan/2026:09:01:36 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:33 +0000] "-" 400 2147
+192.168.122.1 - - [19/Jan/2026:09:02:33 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:02:43 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:43 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:49 +0000] "GET /ScadaLTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:49 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:52 +0000] "GET /ScadaLTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:02:52 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:06:55 +0000] "GET /ScadaLTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:06:55 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:07:01 +0000] "GET /ScadaLTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:07:05 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:09:23 +0000] "-" 400 2087
+192.168.122.1 - - [19/Jan/2026:09:09:23 +0000] "-" 400 2185
+192.168.122.1 - - [19/Jan/2026:09:09:26 +0000] "-" 400 2197
+192.168.122.1 - - [19/Jan/2026:09:09:26 +0000] "-" 400 2197
+192.168.122.1 - - [19/Jan/2026:09:09:30 +0000] "-" 400 2177
+192.168.122.1 - - [19/Jan/2026:09:09:30 +0000] "-" 400 2191
+192.168.122.1 - - [19/Jan/2026:09:09:36 +0000] "-" 400 2221
+192.168.122.1 - - [19/Jan/2026:09:09:36 +0000] "-" 400 2169
+192.168.122.1 - - [19/Jan/2026:09:09:39 +0000] "-" 400 2183
+192.168.122.1 - - [19/Jan/2026:09:09:39 +0000] "-" 400 2189
+192.168.122.1 - - [19/Jan/2026:09:10:34 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:10:34 +0000] "-" 400 2187
+172.25.0.1 - - [19/Jan/2026:09:11:08 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:11:34 +0000] "-" 400 2163
+192.168.122.1 - - [19/Jan/2026:09:11:34 +0000] "-" 400 2105
+192.168.122.1 - - [19/Jan/2026:09:11:35 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:11:35 +0000] "-" 400 2183
+192.168.122.1 - - [19/Jan/2026:09:11:36 +0000] "-" 400 2187
+192.168.122.1 - - [19/Jan/2026:09:11:36 +0000] "-" 400 2205
+192.168.122.1 - - [19/Jan/2026:09:11:36 +0000] "-" 400 2193
+192.168.122.1 - - [19/Jan/2026:09:11:36 +0000] "-" 400 2211
+192.168.122.1 - - [19/Jan/2026:09:11:37 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:11:37 +0000] "-" 400 2031
+192.168.122.1 - - [19/Jan/2026:09:11:38 +0000] "-" 400 2125
+192.168.122.1 - - [19/Jan/2026:09:11:38 +0000] "-" 400 2135
+192.168.122.1 - - [19/Jan/2026:09:11:38 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:11:38 +0000] "-" 400 1997
+192.168.122.1 - - [19/Jan/2026:09:11:39 +0000] "-" 400 2169
+192.168.122.1 - - [19/Jan/2026:09:11:39 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:11:40 +0000] "-" 400 2181
+192.168.122.1 - - [19/Jan/2026:09:11:40 +0000] "-" 400 2187
+192.168.122.1 - - [19/Jan/2026:09:12:38 +0000] "GET /Scada-LTS HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:12:38 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:13:51 +0000] "GET /ScadaBR/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:13:51 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:13:54 +0000] "GET /ScadaBR/ HTTP/1.1" 404 682
+172.25.0.1 - - [19/Jan/2026:09:20:51 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:21:37 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:21:37 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:22:45 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:22:45 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:46 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:50 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:51 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:51 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:51 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:51 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:51 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /favicon.ico HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:52 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:53 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:53 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:26:53 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+172.25.0.1 - - [19/Jan/2026:09:29:51 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:26 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:27 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:27 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:28 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:29 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:29 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:30:29 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+172.25.0.1 - - [19/Jan/2026:09:36:34 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:47 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:48 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+192.168.122.1 - - [19/Jan/2026:09:37:49 +0000] "GET /Scada-LTS/ HTTP/1.1" 404 682
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/login.htm HTTP/1.1" 200 8938
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/assets/user_styles.css HTTP/1.1" 200 452
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/assets/layout.css HTTP/1.1" 200 7749
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/assets/common_DEFAULT.css HTTP/1.1" 200 6907
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/resources/dojo/dojo.js HTTP/1.1" 200 370567
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/resources/jQuery/jquery-1.10.2.min.js HTTP/1.1" 200 93107
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/resources/header.js HTTP/1.1" 200 10582
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/resources/soundmanager2-nodebug-jsmin.js HTTP/1.1" 200 20632
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/resources/common.js HTTP/1.1" 200 32669
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/assets/logo.png HTTP/1.1" 200 14850
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/dwr/engine.js HTTP/1.1" 200 44181
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/dwr/util.js HTTP/1.1" 200 46250
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/spacer.gif HTTP/1.1" 200 43
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/control_play_blue.png HTTP/1.1" 200 6678
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/world.png HTTP/1.1" 200 2209
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/magnifier.png HTTP/1.1" 200 615
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/help.png HTTP/1.1" 200 1220
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/dwr/interface/MiscDwr.js HTTP/1.1" 200 4380
+172.25.0.1 - - [19/Jan/2026:09:39:44 +0000] "GET /Scada-LTS/images/accept.png HTTP/1.1" 200 1883
+172.25.0.1 - - [19/Jan/2026:09:39:45 +0000] "POST /Scada-LTS/dwr/call/plaincall/MiscDwr.terminateLongPoll.dwr HTTP/1.1" 200 86
+172.25.0.1 - - [19/Jan/2026:09:39:45 +0000] "POST /Scada-LTS/login.htm HTTP/1.1" 302 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/resources/node_modules/stompjs/lib/stomp.min.js HTTP/1.1" 200 7850
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/util.js HTTP/1.1" 304 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/resources/node_modules/sockjs-client/dist/sockjs.min.js HTTP/1.1" 200 57411
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/engine.js HTTP/1.1" 200 44181
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/interface/MiscDwr.js HTTP/1.1" 200 4380
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/desktop.png HTTP/1.1" 200 1159
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/interface/WatchListDwr.js HTTP/1.1" 200 4490
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/resources/view.js HTTP/1.1" 200 16987
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/assets/logo.png HTTP/1.1" 304 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/eye.png HTTP/1.1" 200 1710
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/menu_separator.png HTTP/1.1" 200 144
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/icon_view.png HTTP/1.1" 200 1278
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/flag_white.png HTTP/1.1" 200 1362
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/watch_list.shtm HTTP/1.1" 200 65125
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/cog.png HTTP/1.1" 200 2544
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/report.png HTTP/1.1" 200 1945
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/clock.png HTTP/1.1" 200 2464
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/icon_ds.png HTTP/1.1" 200 1410
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/script_gear.png HTTP/1.1" 200 1442
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/link.png HTTP/1.1" 200 972
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/user.png HTTP/1.1" 200 1643
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/user_ds.png HTTP/1.1" 200 1979
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/book.png HTTP/1.1" 200 1251
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/folder_brick.png HTTP/1.1" 200 1768
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/transmit.png HTTP/1.1" 200 1317
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/multi_bell.png HTTP/1.1" 200 1615
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/application_form.png HTTP/1.1" 200 1323
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/control_stop_blue.png HTTP/1.1" 200 1515
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/script_code.png HTTP/1.1" 200 1257
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/house.png HTTP/1.1" 200 2165
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/script.png HTTP/1.1" 200 823
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/hammer.png HTTP/1.1" 200 1635
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/pencil.png HTTP/1.1" 200 1463
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/cross.png HTTP/1.1" 200 1877
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/hourglass.png HTTP/1.1" 200 744
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/house_link.png HTTP/1.1" 200 1928
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/delete.png HTTP/1.1" 200 1691
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/icon_edit.png HTTP/1.1" 200 1375
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/report_add.png HTTP/1.1" 200 1988
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/add.png HTTP/1.1" 200 1660
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/copy.png HTTP/1.1" 200 465
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/icon_chart.png HTTP/1.1" 200 526
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/arrow_down_thin.png HTTP/1.1" 200 1176
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/bullet_delete.png HTTP/1.1" 200 939
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/icon_comp.png HTTP/1.1" 200 2202
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/arrow_up_thin.png HTTP/1.1" 200 1111
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/warn.png HTTP/1.1" 200 1562
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/resources/jQuery/plugins/chosen/chosen.min.css HTTP/1.1" 200 11634
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/resources/jQuery/plugins/chosen/chosen.jquery.min.js HTTP/1.1" 200 25688
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/sound_none.png HTTP/1.1" 200 2112
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/MiscDwr.initializeLongPoll.dwr HTTP/1.1" 200 123
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/WatchListDwr.getDateRangeDefaults.dwr HTTP/1.1" 200 221
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/WatchListDwr.init.dwr HTTP/1.1" 200 685
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/MiscDwr.terminateLongPoll.dwr HTTP/1.1" 200 86
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/MiscDwr.resetWatchlistState.dwr HTTP/1.1" 200 86
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/ws-scada/alarmLevel/info?t=1768815586590 HTTP/1.1" 200 87
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/ws-scada/alarmLevel/637/hg3o5ovz/websocket HTTP/1.1" 101 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/emport.shtm HTTP/1.1" 200 32882
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/interface/MiscDwr.js HTTP/1.1" 200 4380
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/util.js HTTP/1.1" 304 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/interface/EmportDwr.js HTTP/1.1" 200 3657
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/dwr/engine.js HTTP/1.1" 200 44181
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/MiscDwr.initializeLongPoll.dwr HTTP/1.1" 200 123
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "POST /Scada-LTS/dwr/call/plaincall/EmportDwr.importUpdate.dwr HTTP/1.1" 200 162
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/ws-scada/alarmLevel/info?t=1768815586889 HTTP/1.1" 200 89
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/ws-scada/alarmLevel/513/4izdsg5r/websocket HTTP/1.1" 101 -
+172.25.0.1 - - [19/Jan/2026:09:39:46 +0000] "GET /Scada-LTS/images/flag_blue.png HTTP/1.1" 200 1374
+172.25.0.1 - - [19/Jan/2026:09:39:47 +0000] "POST /Scada-LTS/dwr/call/plaincall/EmportDwr.importData.dwr HTTP/1.1" 200 167

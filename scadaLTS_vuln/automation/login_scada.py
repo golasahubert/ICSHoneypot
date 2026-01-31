@@ -14,7 +14,7 @@ with sync_playwright() as p:
     page.click('input[type="submit"]')
 
     # 3. Wait for main dashboard to load
-    page.wait_for_selector("text=Watch List")
+    #page.wait_for_selector("text=Watch List")
 
     # 4. Navigate directly to the import page
     page.goto("http://localhost:8080/Scada-LTS/emport.shtm")
