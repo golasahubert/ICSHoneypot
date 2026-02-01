@@ -1,0 +1,1 @@
+To run the system run the build_system.sh script, then enter scadaHMI ip:8181/Scada-LTS, log in as superadmin and go to import section, paste text from dataHMI2.txt in automation folder and click import.

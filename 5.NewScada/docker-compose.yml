@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------
+  # DATABASE SERVICE (MySQL 5.7)
+  # ---------------------------------------------------------
+  database:
+    container_name: mysql
+    image: mysql/mysql-server:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=scadalts
+    expose: ["3306"]
+    # CRITICAL: Required for SCADA-LTS to allow triggers and stored procedures
+    command: --log_bin_trust_function_creators=1
+    volumes:
+      # Initialization script (folder must contain your .sql dump)
+      - ./SCADA-LTS/docker/volumes/databases:/docker-entrypoint-initdb.d
+      # Database data stored in local folder (easier to clean up than docker volumes)
+      - ./db_data:/var/lib/mysql
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.7
+    healthcheck:
+      # Checks if the database is up.
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -proot || exit 1"]
+      interval: 10s
+      retries: 10
+      timeout: 5s
+      # Long start period to allow time for the large SQL dump import
+      start_period: 60s
+
+  # ---------------------------------------------------------
+  # SCADA-LTS (HMI)
+  # ---------------------------------------------------------
+  scadalts:
+    container_name: scadalts-1
+    image: scadalts/scadalts:latest
+    ports:
+      - "8181:8080" # Access via http://localhost:8181/Scada-LTS
+    depends_on:
+      database:
+        condition: service_healthy # Wait for MySQL to finish importing
+      # Optional: Wait for PLCs to start to avoid connection errors in logs
+      plc1:
+        condition: service_started
+      plc2:
+        condition: service_started
+      plc3:
+        condition: service_started
+    expose: ["8080", "8000"]
+    volumes:
+      - ./SCADA-LTS/security.xml:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/spring-security.xml:ro
+      - ./SCADA-LTS/1.svg:/usr/local/tomcat/webapps/Scada-LTS/uploads/1.svg
+      - ./SCADA-LTS/jsp:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/jsp
+      - ./SCADA-LTS/assets:/usr/local/tomcat/webapps/Scada-LTS/assets
+      - ./SCADA-LTS/tags2:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/tags
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.2
+    links:
+      - database:database
+
+  # ---------------------------------------------------------
+  # PLC 1
+  # ---------------------------------------------------------
+  plc1:
+    build:
+      context: ./plc_1_docker
+    container_name: lts_plc1_sswat
+    ports:
+      - "2502:502"   # Modbus Port
+      - "28080:8080" # Web Interface Port
+      - "29090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.3
+
+  # ---------------------------------------------------------
+  # PLC 2
+  # ---------------------------------------------------------
+  plc2:
+    build:
+      context: ./plc_2_docker
+    container_name: lts_plc2_sswat
+    ports:
+      - "3502:502"
+      - "38080:8080"
+      - "39090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.4
+
+  # ---------------------------------------------------------
+  # PLC 3
+  # ---------------------------------------------------------
+  plc3:
+    build:
+      context: ./plc_3_docker
+    container_name: lts_plc3_sswat
+    ports:
+      - "4502:502"
+      - "48080:8080"
+      - "49090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.5
+
+  # ---------------------------------------------------------
+  # PHYSICAL PROCESS SIMULATOR
+  # ---------------------------------------------------------
+  simulator:
+    build:
+      context: ./physical_sim_docker
+    container_name: lts_sim_sswat
+    ports:
+      - "5502:502"
+      - "58080:8080"
+      - "59090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.6
+
+# ---------------------------------------------------------
+# NETWORK CONFIGURATION
+# ---------------------------------------------------------
+networks:
+  lts_network:
+    name: lts_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1

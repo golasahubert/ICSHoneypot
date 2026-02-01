@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- saved from url=(0106)http://93.173.22.180/S7-1200%20station_1.html?intro_enter_button=ENTER&PriNav=Start&coming_from_intro=true -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>S7-1200 station_1</title><meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="-1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+<link rel="stylesheet" type="text/css" href="./S7-1200 station_1_files/S7Web.css" media="all">
+<link rel="stylesheet" type="text/css" href="./S7-1200 station_1_files/S7WebPrint.css" media="print">
+<link rel="shortcut icon" href="http://93.173.22.180/.favicon.ico">
+<script src="./S7-1200 station_1_files/jquery-1.js.download" type="text/javascript"></script>
+
+<script src="./S7-1200 station_1_files/update.js.download" type="text/javascript">
+</script>
+<script type="text/javascript">
+var update_interval = "10000";
+var url_to_update = window.location.href;
+var lang_str_details = "Details";
+
+var currentdate = new Date(); 
+var datetime = "Last Sync: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+</script>
+</head>
+<body>
+<table class="main_table">
+<tbody><tr class="Header_Area">
+<td><img src="./S7-1200 station_1_files/Siemens_Firmenmarke_Header.gif" alt="Siemens"></td><td valign="top">
+<div id="Header_Title_Description">
+S7-1200 station_1 / PLC_1
+</div>
+</td>
+</tr>
+<tr id="Header_Language_Time_Date">
+<td></td><td>
+<table id="Language_Time_Date_Table">
+<tbody><tr>
+<td></td><td class="datetime-selection">
+ 
+<div>
+<span id="dynamic-date" class="updatable"></span>
+<select name="time_preference" id="time_preference">
+<option value="system" selected="selected"></option>
+<option value="local">PLC Local&nbsp;</option>
+</select>
+</div>
+
+<script type="text/javascript">
+$(window).load(function(){
+$("select#time_preference").change(function() {
+document.cookie = "siemens_automation_time_preference=" + $(this).val() + "; expires=Tue, 01 Jan 2036 00:00:00 GMT; path=/ ;";
+top.window.location.reload();
+return false;
+});
+});
+</script>
+</td>
+<td class="language-selection"><form class="Header_Selection_Form" method="get">
+<div>
+<select name="Language" id="language_preference">
+<option value="en" selected="selected">English</option>
+<option value="de">Deutsch</option>
+<option value="fr">Français</option>
+<option value="it">Italiano</option>
+<option value="es">Español</option>
+</select>
+</div>
+</form>
+<script type="text/javascript">
+$("select#language_preference").change(function() {
+document.cookie = "siemens_automation_language=" + $(this).val() + "; expires=Tue, 01 Jan 2036 00:00:00 GMT; path=/ ;";
+top.window.location.reload();
+return false;
+});
+</script>
+
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr class="Separation_Line"><td colspan="2"></td></tr>
+<tr>
+<td id="MainMenu_Area" valign="top">
+<table id="MainMenu_Area_Layout">
+<tbody><tr>
+<td colspan="2">
+ 
+<script type="text/javascript">
+function setLoginCookie() {
+window.top.document.cookie = "coming_from_login=true";
+}
+</script>
+<div id="Login_Area">
+<form enctype="application/x-www-form-urlencoded" action="http://93.173.22.180/login.html" method="get" autocomplete="off" id="Login_Area_Form">
+<div>
+<input type="hidden" name="Redirection" value="">
+<table class="Login_Table">
+<tbody><tr class="Login_Table_SpaceRow">
+<td class="Login_Table_SpaceCell"></td><td colspan="2"></td>
+</tr>
+<tr class="Login_Table_Row">
+<td class="Login_Table_SpaceCell"></td><td class="Login_Table_LeftCell">
+<input id="Login_Area_Name_InputTag" type="text" name="Login" maxlength="40" class="Login_Input_Ghost" value="Username" onfocus="if (typeof username_has_changed === &#39;undefined&#39; || !username_has_changed) { this.value=&#39;&#39;; this.className = &#39;Login_Input&#39;; username_has_changed = true; }" onblur="username_has_changed = (this.value != &#39;&#39;); if (!username_has_changed) { this.value=&#39;Username&#39;; this.className=&#39;Login_Input_Ghost&#39;; }">
+</td>
+<td class="Login_Table_RightCell">
+<div class="Login_InvalidLogin">
+
+</div>
+</td>
+</tr>
+<tr class="Login_Table_Row">
+<td class="Login_Table_SpaceCell"></td><td class="Login_Table_LeftCell"><input id="Login_Area_PW_InputTag" type="password" name="Password" maxlength="32" class="Login_Input"></td><td class="Login_Table_RightCell"><button id="Login_Area_SubmitButton" type="submit" onclick="setLoginCookie();" class="Login_Button">Login</button></td>
+</tr>
+</tbody></table>
+</div>
+</form>
+</div>
+  
+</td>
+</tr>
+<tr class="main-menu">
+<td colspan="2">
+
+</td>
+</tr>
+</tbody></table>
+</td>
+<td class="Client_Area"><table class="Data_Area">
+<tbody><tr>
+<td colspan="2" class="Title_Area">
+<table class="Title_Area_Table">
+<tbody><tr>
+<td class="Title_Area_Name">S7-1200 station_1</td>
+<td class="Title_Area_ReloadIcon">
+&nbsp;  
+<span id="dynamic_link_on" style="" onclick="update_off()"><img title="Automatic refresh enabled" src="./S7-1200 station_1_files/update_active.gif" alt="" height="13px">&nbsp;<span title="Disable automatic refresh" class="Text_ReloadIcon">Off</span></span>
+<span id="dynamic_link_off" style="display:none" onclick="update_on()"><img title="Automatic refresh disabled" src="./S7-1200 station_1_files/update_inactive.gif" alt="" height="13px">&nbsp;<span title="Automatic refresh enabled" class="Text_ReloadIcon">On</span></span>
+</td>
+<td class="Title_Area_PrinterIcon"><a class="PrinterIcon_Active" href="javascript:window.print()">&nbsp;<img title="Print" style="padding-right: 0px; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px; height: 13px;" alt="Print" src="./S7-1200 station_1_files/Drucken.gif"></a></td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td class="table_position" valign="top" align="left">
+<table>
+<tbody><tr>
+<td>
+<div id="CPU" class="cpu1214 updatable">
+ 
+<img class="ledImg led1" src="./S7-1200 station_1_files/LED_GREEN.PNG" alt="">  
+<img class="ledImg led2" src="./S7-1200 station_1_files/LED_DISABLED.PNG" alt="">  
+<img class="ledImg led3" src="./S7-1200 station_1_files/LED_DISABLED.PNG" alt=""> 
+<img id="sigboard" src="./S7-1200 station_1_files/SIGNAL_BOARD.PNG" alt="">
+<img id="cpuNameImg" src="./S7-1200 station_1_files/NameTag_CPU_1214C_ACDCRly.png" alt="">
+</div>
+<script type="text/javascript">
+if (location.href.search("PriNav=Start") != -1) {
+(function() {
+(function blink() {
+$(".ledImg.blink").toggle();
+setTimeout(blink, 250);
+})();
+})();
+}
+</script>
+</td>
+<td>
+<table id="start-page-data" class="updatable data-table long-field long-static first-column">
+<tbody><tr class="header"><td>General:</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>TIA Portal:</td><td>V13.0 SP1</td><td>&nbsp;</td></tr>
+<tr><td>Station name:</td><td id="stationName">S7-1200 station_1</td><td>&nbsp;</td></tr>
+<tr><td>Module name:</td><td id="moduleName">PLC_1</td><td>&nbsp;</td></tr>
+<tr><td>Module type:</td><td id="moduleType">CPU 1214C ACDCRly</td><td>&nbsp;</td></tr>
+<tr class="header"><td>Status:</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td>Operating Mode:</td><td id="operatingMode">RUN</td><td>&nbsp;</td></tr>
+<tr><td>Status:</td><td id="status"><img src="./S7-1200 station_1_files/okay.gif" alt="" style="vertical-align: text-top;">&nbsp; OK</td><td>&nbsp;</td></tr>
+ 
+ 
+<tr><td>&nbsp;</td>
+<td>
+ 
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="button">
+<td>&nbsp;</td>
+<td>
+ 
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="button">
+<td>&nbsp;</td>
+<td>
+ 
+</td>
+<td>&nbsp;</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+
+
+</td>
+</tr>
+</tbody></table>
+
+
+
+
+<iframe id="server_frame" name="server_frame" style="width:0;height:0;top:0px;left:-2000px;position:absolute" src="./S7-1200 station_1_files/Dummy.html"></iframe></body></html>

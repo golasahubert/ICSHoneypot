@@ -1,0 +1,373 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%--
+    Mango - Open Source M2M - http://mango.serotoninsoftware.com
+    Copyright (C) 2006-2011 Serotonin Software Technologies Inc.
+    @author Matthew Lohbihler
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/.
+--%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<%@include file="/WEB-INF/tags/decl.tagf"%>
+<%@attribute name="styles" fragment="true" %>
+<%@attribute name="dwr" %>
+<%@attribute name="css" %>
+<%@attribute name="js" %>
+<%@attribute name="onload" %>
+<%@attribute name="jqplugins" %>
+
+
+<html>
+<head>
+  <title>Scada-Oil-Refinery</title>
+
+  <!-- Meta -->
+  <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8"/>
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+ 
+
+  <!-- Style -->
+  <link rel="icon" href="assets/images/favicon.ico"/>
+  <link rel="shortcut icon" href="assets/images/favicon.ico"/>
+  <link href="assets/layout.css" type="text/css" rel="stylesheet"/>
+  <c:set var="isRoles" value="${not empty sessionUser && sessionUser.getAttribute('roles') != null}" />
+  <c:set var="isRolePublic" value="${isRoles && sessionUser.getAttribute('roles').contains('ROLE_PUBLIC')}" />
+  <c:set var="isRoleService" value="${isRoles && (sessionUser.getAttribute('roles').size() == 1 && sessionUser.getAttribute('roles').contains('ROLE_SERVICES'))}" />
+  <c:set var="isLoggedToScadaUser" value="${isRoles && !isRoleService && !isRolePublic}" />
+  <c:choose>
+    <c:when test="${isLoggedToScadaUser}">
+      <link href="assets/common_MODERN.css" type="text/css" rel="stylesheet"/>
+    </c:when>
+    <c:otherwise>
+      <link href="assets/login.css" type="text/css" rel="stylesheet"/>
+    </c:otherwise>
+  </c:choose>
+  <c:forTokens items="${css}" var="cssfile" delims=", ">
+    <link href="resources/${cssfile}.css" type="text/css" rel="stylesheet"/>
+  </c:forTokens>
+  <link rel="stylesheet" type="text/css" href="assets/user_styles.css"/>
+  <jsp:invoke fragment="styles"/>
+
+  <style type="text/css">
+    #__header__alarmLevelImg {
+        height: 32px !important;
+        width: 32px !important;
+        vertical-align: middle !important;
+    }
+  </style>
+
+  <!-- Scripts -->
+  <script src="resources/fuscabr/fuscabr.js" defer></script>
+  <script type="text/javascript">
+  	var djConfig = { isDebug: false, extraLocale: ['en-us', 'nl', 'nl-nl', 'ja-jp', 'fi-fi', 'sv-se', 'zh-cn', 'zh-tw','xx'] };
+  	var ctxPath = "<%=request.getContextPath()%>";
+  </script>
+  <!-- script type="text/javascript" src="http://o.aolcdn.com/dojo/0.4.2/dojo.js"></script -->
+  <script type="text/javascript" src="resources/dojo/dojo.js"></script>
+  <script type="text/javascript" src="resources/jQuery/jquery-1.10.2.min.js"></script>
+  <c:forTokens items="${jqplugins}" var="plugin" delims=", ">
+    <script type="text/javascript" src="resources/jQuery/plugins/${plugin}.js"></script>
+  </c:forTokens>
+  <script type="text/javascript">
+	var jQuery = $;
+	$ = null;
+  </script>
+  <script type="text/javascript" src="dwr/engine.js"></script>
+  <script type="text/javascript" src="dwr/util.js"></script>
+  <script type="text/javascript" src="dwr/interface/MiscDwr.js"></script>
+  <script type="text/javascript" src="resources/soundmanager2-nodebug-jsmin.js"></script>
+  <script type="text/javascript" src="resources/common.js"></script>
+  <c:if test="${isLoggedToScadaUser}">
+      <script src="resources/node_modules/stompjs/lib/stomp.min.js"></script>
+      <script src="resources/node_modules/sockjs-client/dist/sockjs.min.js"></script>
+  </c:if>
+  <c:forEach items="${dwr}" var="dwrname">
+    <script type="text/javascript" src="dwr/interface/${dwrname}.js"></script></c:forEach>
+  <c:forTokens items="${js}" var="jsname" delims=", ">
+    <script type="text/javascript" src="resources/${jsname}.js"></script></c:forTokens>
+  <script type="text/javascript">
+    mango.i18n = <sst:convert obj="${clientSideMessages}"/>;
+  </script>
+  <c:if test="${!simple}">
+    <script type="text/javascript" src="resources/header.js"></script>
+    <script type="text/javascript">
+
+	    function loadjscssfile(filename, filetype){
+			if (filetype=="js"){ //if filename is a external JavaScript file
+	    		var fileref=document.createElement('script')
+	    		fileref.setAttribute("type","text/javascript")
+	    		fileref.setAttribute("src", filename)
+			} else if (filetype=="css"){ //if filename is an external CSS file
+	    		var fileref=document.createElement("link")
+	    		fileref.setAttribute("rel", "stylesheet")
+	    		fileref.setAttribute("type", "text/css")
+	    		fileref.setAttribute("href", filename)
+			}
+			if (typeof fileref!="undefined")
+	    		document.getElementsByTagName("head")[0].appendChild(fileref)
+		};
+
+      dwr.util.setEscapeHtml(false);
+      <c:if test="${isLoggedToScadaUser || isRolePublic}">
+        dojo.addOnLoad(mango.header.onLoad);
+      </c:if>
+      <c:if test="${isLoggedToScadaUser}">
+        dojo.addOnLoad(function() { setUserMuted(${sessionUser.muted}); });
+        <c:if test="${sessionUser.hideMenu}">
+           dojo.addOnLoad(function() { setFullscreenIfGraphicView(); });
+        </c:if>
+        dojo.addOnLoad(function() { onloadHandler(); });
+      </c:if>
+
+      function setLocale(locale) {
+          MiscDwr.setLocale(locale, function() { window.location = window.location });
+      }
+
+      function setHomeUrl() {
+          MiscDwr.setHomeUrl(window.location.href, function() { alert("Home URL saved"); });
+      }
+
+      function goHomeUrl() {
+          MiscDwr.getHomeUrl(function(loc) { window.location = loc; });
+      }
+
+      function setFullscreenIfGraphicView() {
+        if(window.location.href.includes("views.shtm")) {
+          document.cookie = "fullScreen=no";  <%-- Mettere yes per tornare alla modalità full screen sempre --%>
+          checkFullScreen();
+        }
+      }
+
+    <c:if test="${isLoggedToScadaUser}">
+
+        function onloadHandler() {
+            onloadHandlerWebsocket();
+        }
+
+        function setAlarmLevelText(alarmLevel, textNode) {
+            textNode = document.getElementById(textNode);
+            if (alarmLevel == 0)
+                textNode.innerHTML = "";
+            else if (alarmLevel == 1)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.info"/>';
+            else if (alarmLevel == 2)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.urgent"/>';
+            else if (alarmLevel == 3)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.critical"/>';
+            else if (alarmLevel == 4)
+                textNode.innerHTML = '<fmt:message key="common.alarmLevel.lifeSafety"/>';
+            else
+                textNode.innerHTML = "Unknown: "+ alarmLevel;
+        }
+
+        function setAlarmLevelImg(alarmLevel, imgNode) {
+            if (alarmLevel == 0)
+                updateImg(imgNode, "images/flag_green.png", "Green Flag", false, "none");
+            else if (alarmLevel == 1)
+                updateImg(imgNode, "images/flag_blue.png", "Blue Flag", true, "visible");
+            else if (alarmLevel == 2)
+                updateImg(imgNode, "images/flag_yellow.png", "Yellow Flag", true, "visible");
+            else if (alarmLevel == 3)
+                updateImg(imgNode, "images/flag_orange.png", "Orange Flag", true, "visible");
+            else if (alarmLevel == 4)
+                updateImg(imgNode, "images/flag_red.png", "Red Flag", true, "visible");
+            else
+                updateImg(imgNode, "(unknown)", "(unknown)", true, "visible");
+        }
+
+        window.addEventListener('beforeunload', (event) => {
+            try {
+                disconnectWebsocket();
+            } catch(error) {}
+        });
+    </c:if>
+    </script>
+  </c:if>
+</head>
+
+<body>
+
+<!-- mainHeader -->
+<c:if test="${!empty sessionUser}">
+<div id="mainHeader">
+  <tag:logo/>
+
+  <div id="eventsRow">
+    <a href="events.shtm">
+      <span id="__header__alarmLevelDiv">
+        <img id="__header__alarmLevelImg" src="images/spacer.gif" alt="" border="0" title=""/>
+        <span id="__header__alarmLevelText"></span>
+      </span>
+    </a>
+  </div>
+
+  <div>
+    <c:if test="${!empty instanceDescriptionHeader} && ${sessionUser.admin}">
+      <span id="instanceDescriptionHeader" align="right" valign="bottom" class="projectTitle"><a href="system_settings.shtm" style="text-decoration: none;color:grey">${instanceDescriptionHeader}</a></span>
+    </c:if>
+  </div>
+</div>
+
+<!-- subheader -->
+<c:if test="${!simple}">
+<div class="navHeader" id="subHeader">
+  <div>
+    <nav class="flex-default">
+      <c:if test="${isLoggedToScadaUser}">
+        <div class="spacer">
+            <c:choose>
+                <c:when test="${sessionUser.hideMenu}">
+                   
+                  <tag:menuItem href="watch_list.shtm" src="assets/images/watchlist-icon.png" key="header.watchlist"/>
+                  <img src="./images/menu_separator.png" class="separator"/>
+                  <tag:menuItem href="views.shtm" src="assets/images/hmi-icon.png" key="header.views"/>
+                  <img src="./images/menu_separator.png" class="separator"/>
+                  <tag:menuItem href="users.shtm" src="assets/images/user-icon.png" key="header.users"/>
+                  <img src="./images/menu_separator.png" class="separator"/>
+                    
+                </c:when>
+             <c:otherwise>
+                <tag:menuItem href="app.shtm#/watch-list" png="desktop" key="header.newui"/>
+                <%-- <img src="./images/menu_separator.png" class="separator"/> --%>
+                <tag:menuItem href="watch_list.shtm" png="eye" key="header.watchlist"/>
+                <tag:menuItem href="views.shtm" png="icon_view" key="header.views"/>
+                <tag:menuItem href="events.shtm" png="flag_white" key="header.alarms"/>
+                <tag:menuItem href="reports.shtm" png="report" key="header.reports"/>
+             </c:otherwise>
+           </c:choose>
+        </div>
+
+
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
+            <%-- <img src="./images/menu_separator.png" class="separator"/> --%>
+            <tag:menuItem href="event_handlers.shtm" png="cog" key="header.eventHandlers"/>
+            <tag:menuItem href="data_sources.shtm" png="icon_ds" key="header.dataSources"/>
+            <tag:menuItem href="scheduled_events.shtm" png="clock" key="header.scheduledEvents"/>
+            <tag:menuItem href="compound_events.shtm" png="multi_bell" key="header.compoundEvents"/>
+            <tag:menuItem href="point_links.shtm" png="link" key="header.pointLinks"/>
+            <tag:menuItem href="scripting.shtm" png="script_gear" key="header.scripts"/>
+            <tag:menuItem href="users.shtm" png="user" key="header.users"/>
+          </div>
+        </c:if>
+
+        <div class="spacer">
+          <%--<img src="./images/menu_separator.png" class="separator"/> --%>
+          
+        </div>
+
+        <c:if test="${sessionUser.admin}">
+          <div class="spacer">
+	    <tag:menuItem href="usersProfiles.shtm" png="user_ds" key="header.usersProfiles"/>
+            <tag:menuItem href="pointHierarchySLTS" png="folder_brick" key="header.pointHierarchy"/>
+            <tag:menuItem href="mailing_lists.shtm" png="book" key="header.mailingLists"/>
+            <tag:menuItem href="publishers.shtm" png="transmit" key="header.publishers"/>
+            <tag:menuItem href="maintenance_events.shtm" png="hammer" key="header.maintenanceEvents"/>
+            <tag:menuItem href="system_settings.shtm" png="application_form" key="header.systemSettings"/>
+            <tag:menuItem href="emport.shtm" png="script_code" key="header.emport"/>
+            <tag:menuItem href="sql.shtm" png="script" key="header.sql"/>
+          </div>
+        </c:if>
+
+        <div class="spacer">
+          <%-- <img src="./images/menu_separator.png" class="separator"/> --%>
+          <span onclick="disconnectWebsocket()">
+          
+          <tag:menuItem href="logout.htm" src="assets/images/logout-icon.png" key="header.logout"/>
+          </span>
+          <img src="./images/menu_separator.png" class="separator"/>
+          <tag:menuItem href="help.shtm" src="assets/images/help-icon.png" key="header.help"/>
+        </div>
+      </c:if>
+
+      <c:if test="${isRolePublic}">
+        <div class="spacer">
+          <img src="./images/menu_separator.png" class="separator"/>
+          <span onclick="disconnectWebsocket()">
+          <tag:menuItem href="logout.htm" src="assets/images/logout-icon.png" key="header.logout"/>
+          </span>
+          <tag:menuItem href="help.shtm" src="assets/images/help-icon.png" key="header.help"/>
+        </div>
+      </c:if>
+
+      <c:if test="${empty sessionUser}">
+         
+      </c:if>
+      <div id="headerMenuDescription" class="labelDiv" style="position:absolute;display:none;"></div>
+    </nav>
+  </div>
+
+  <div class="flex-default">
+    <div id="navbarUserInfo">
+      <c:if test="${isLoggedToScadaUser}">
+        <span class="copyTitle"><fmt:message key="header.user"/>:</span>
+        <c:choose>
+            <c:when test="${!empty sessionUser.firstName}">
+              <span class="userName"><c:out value="${sessionUser.firstName} ${sessionUser.lastName}"/></span>
+            </c:when>
+            <c:otherwise>
+              <span class="userName"><c:out value="${sessionUser.username}"/></span>
+            </c:otherwise>
+        </c:choose>
+      </c:if>
+    </div>
+
+    <div id="navbarUserProperties" class="flex-default spacer">
+      <c:if test="${isLoggedToScadaUser}">
+        <c:if test="${!sessionUser.hideMenu}">
+            <tag:img id="userMutedImg" onclick="MiscDwr.toggleUserMuted(setUserMuted)" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house" title="header.goHomeUrl" onclick="goHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+            <tag:img png="house_link" title="header.setHomeUrl" onclick="setHomeUrl()" onmouseover="hideLayer('localeEdit')"/>
+        </c:if>
+      </c:if>
+
+      
+    </div>
+  </div>
+</div>
+</c:if>
+</c:if>
+
+<div id="sltsContent" class="content">
+  <jsp:doBody/>
+</div>
+
+
+
+<div id="sltsFooter" class="footer">
+    <span>&copy;2024-${toYear} Scada-Oil-Refinery <fmt:message key="footer.rightsReserved"/><span>
+</div>
+
+<c:if test="${empty sessionUser}">
+	  <div style="text-align: center; margin-top: 10px;">
+  <img src="${pageContext.request.contextPath}/assets/logo.png" alt="Descrizione immagine" style="max-width: 15%; height: auto;" />
+</div>         
+</c:if>
+
+<c:if test="${!!sessionUser.hideHeader}">
+    
+
+    <script type="text/javascript">
+    function resetHideView() {
+        let loc = window.location.href.split('/');
+        window.location = loc[0] + "//" + loc[2] + "/" + loc[3] + "/watch_list.shtm";
+    }
+    </script>
+</c:if>
+
+<c:if test="${!empty onload}">
+  <script type="text/javascript">dojo.addOnLoad(${onload});</script>
+</c:if>
+
+</body>
+</html>

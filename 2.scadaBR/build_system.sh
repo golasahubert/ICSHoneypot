@@ -13,7 +13,7 @@ sudo bash kill_docker.sh
 echo "[+] Ensuring that all docker networks are dead"
 sudo docker-compose down
 sudo docker network prune -f
-
+sudo docker container prune -f
 echo "[+] Restarting Docker"
 sudo systemctl restart docker
 

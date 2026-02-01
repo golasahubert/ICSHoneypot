@@ -1,0 +1,116 @@
+/* Reset base */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f1e7da;
+  color: #333;
+}
+
+
+/* Container principale */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f1e7da;
+}
+
+/* Browser info box */
+.login-browser {
+  
+  font-size: 14px;
+  color: #666;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-icon {
+  height: 10px;
+  width: auto;
+}
+
+/* Box centrale per il login */
+.login-box {
+  background-color: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+/* Titolo */
+.login-box h1 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Campo singolo */
+.form-box {
+  margin-bottom: 20px;
+}
+
+.formLabelRequired {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.formField input[type="text"],
+.formField input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.formField input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Pulsante di login */
+.login-button {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.login-button input[type="submit"] {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.footer{
+  text-align: center;
+}
+
+.login-button input[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+/* Messaggi */
+#okMsg {
+  color: green;
+}
+
+#warnMsg {
+  color: red;
+}
+
+/* Errore login */
+.formError .error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 10px;
+}
+

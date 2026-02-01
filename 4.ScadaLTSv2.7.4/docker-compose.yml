@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # --- BAZA DANYCH (Z Twojej działającej wersji) ---
   database:
     container_name: lts_mysql
     image: mysql:5.7
@@ -14,7 +13,6 @@ services:
       - MYSQL_PASSWORD=scadalts
     command: --sql_mode="NO_ENGINE_SUBSTITUTION"
     volumes:
-      # Używamy TEGO SAMEGO wolumenu co przed chwilą
       - db_storage:/var/lib/mysql
     networks:
       lts_network:
@@ -22,7 +20,6 @@ services:
         aliases:
           - database
 
-  # --- SCADA LTS (Z Twojej działającej wersji) ---
   scadalts:
     container_name: lts_scadalts
     image: scadalts/scadalts:v2.7.4
@@ -34,7 +31,7 @@ services:
       - SCADALTS_DB_USER=scadalts
       - SCADALTS_DB_PASS=scadalts
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Otwarty port bezpośredni
     depends_on:
       - database
     volumes:
@@ -44,15 +41,21 @@ services:
       lts_network:
         ipv4_address: 172.25.0.10
 
-  # --- TERAZ DOKLEJAMY PLC (Skopiowane z Twojego projektu) ---
-  # Musimy tylko wskazać poprawne ścieżki do folderów build (context)
-  # Zakładam, że foldery plc_1_docker itp. są w ~/ICSHoneypot/scadaLTS_vuln
-  # Więc musimy podać pełną ścieżkę lub skopiować foldery do ~/lts
-  
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - scadalts
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.2
+
   plc1:
     build:
-      # ZMIEŃ TĘ ŚCIEŻKĘ na poprawną lokalizację folderu plc_1_docker na Twoim dysku!
-      # Np. ../ICSHoneypot/scadaLTS_vuln/plc_1_docker
       context: ./plc_1_docker 
     container_name: lts_plc1_sswat
     ports:
@@ -68,7 +71,7 @@ services:
       context: ./plc_2_docker
     container_name: lts_plc2_sswat
     ports:
-      - "3502:502"
+      - "502:502"
       - "38080:8080"
       - "39090:9090"
     networks:
