@@ -4,3 +4,5 @@ scadaLTS/docker/
 scadaLTS/tomcat_log
 scadaLTS/db_conf
 scadaLTS/db_data
+**/tomcat_log/
+**/logs/

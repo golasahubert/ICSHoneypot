@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # --- BAZA DANYCH (Z Twojej działającej wersji) ---
+  database:
+    container_name: lts_mysql
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=scadalts
+      - MYSQL_USER=scadalts
+      - MYSQL_PASSWORD=scadalts
+    command: --sql_mode="NO_ENGINE_SUBSTITUTION"
+    volumes:
+      # Używamy TEGO SAMEGO wolumenu co przed chwilą
+      - db_storage:/var/lib/mysql
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.9
+        aliases:
+          - database
+
+  # --- SCADA LTS (Z Twojej działającej wersji) ---
+  scadalts:
+    container_name: lts_scadalts
+    image: scadalts/scadalts:v2.7.4
+    environment:
+      - CATALINA_OPTS=-Xmx2G -Xms512m
+      - SCADALTS_DB_HOST=database
+      - SCADALTS_DB_PORT=3306
+      - SCADALTS_DB_NAME=scadalts
+      - SCADALTS_DB_USER=scadalts
+      - SCADALTS_DB_PASS=scadalts
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    volumes:
+      - ./tomcat_log:/usr/local/tomcat/logs:rw
+    restart: always
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.10
+
+  # --- TERAZ DOKLEJAMY PLC (Skopiowane z Twojego projektu) ---
+  # Musimy tylko wskazać poprawne ścieżki do folderów build (context)
+  # Zakładam, że foldery plc_1_docker itp. są w ~/ICSHoneypot/scadaLTS_vuln
+  # Więc musimy podać pełną ścieżkę lub skopiować foldery do ~/lts
+  
+  plc1:
+    build:
+      # ZMIEŃ TĘ ŚCIEŻKĘ na poprawną lokalizację folderu plc_1_docker na Twoim dysku!
+      # Np. ../ICSHoneypot/scadaLTS_vuln/plc_1_docker
+      context: ./plc_1_docker 
+    container_name: lts_plc1_sswat
+    ports:
+      - "2502:502"
+      - "28080:8080"
+      - "29090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.3
+
+  plc2:
+    build:
+      context: ./plc_2_docker
+    container_name: lts_plc2_sswat
+    ports:
+      - "3502:502"
+      - "38080:8080"
+      - "39090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.4
+
+  plc3:
+    build:
+      context: ./plc_3_docker
+    container_name: lts_plc3_sswat
+    ports:
+      - "4502:502"
+      - "48080:8080"
+      - "49090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.5
+
+  simulator:
+    build:
+      context: ./physical_sim_docker
+    container_name: lts_sim_sswat
+    ports:
+      - "5502:502"
+      - "58080:8080"
+      - "59090:9090"
+    networks:
+      lts_network:
+        ipv4_address: 172.25.0.6
+
+volumes:
+  db_storage:
+
+networks:
+  lts_network:
+    name: lts_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16
+          gateway: 172.25.0.1
