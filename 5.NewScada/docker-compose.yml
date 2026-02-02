@@ -15,23 +15,18 @@ services:
       - MYSQL_PASSWORD=root
       - MYSQL_DATABASE=scadalts
     expose: ["3306"]
-    # CRITICAL: Required for SCADA-LTS to allow triggers and stored procedures
     command: --log_bin_trust_function_creators=1
     volumes:
-      # Initialization script (folder must contain your .sql dump)
       - ./SCADA-LTS/docker/volumes/databases:/docker-entrypoint-initdb.d
-      # Database data stored in local folder (easier to clean up than docker volumes)
       - ./db_data:/var/lib/mysql
     networks:
       lts_network:
         ipv4_address: 172.25.0.7
     healthcheck:
-      # Checks if the database is up.
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -proot || exit 1"]
       interval: 10s
       retries: 10
       timeout: 5s
-      # Long start period to allow time for the large SQL dump import
       start_period: 60s
 
   # ---------------------------------------------------------
@@ -39,13 +34,12 @@ services:
   # ---------------------------------------------------------
   scadalts:
     container_name: scadalts-1
-    image: scadalts/scadalts:latest
+    image: scadalts/scadalts:v2.7.4
     ports:
-      - "8181:8080" # Access via http://localhost:8181/Scada-LTS
+      - "8181:8080"
     depends_on:
       database:
-        condition: service_healthy # Wait for MySQL to finish importing
-      # Optional: Wait for PLCs to start to avoid connection errors in logs
+        condition: service_healthy
       plc1:
         condition: service_started
       plc2:
@@ -54,35 +48,80 @@ services:
         condition: service_started
     expose: ["8080", "8000"]
     volumes:
-      - ./SCADA-LTS/security.xml:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/spring-security.xml:ro
-      - ./SCADA-LTS/1.svg:/usr/local/tomcat/webapps/Scada-LTS/uploads/1.svg
-      - ./SCADA-LTS/jsp:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/jsp
+      # Standard assets
       - ./SCADA-LTS/assets:/usr/local/tomcat/webapps/Scada-LTS/assets
-      - ./SCADA-LTS/tags2:/usr/local/tomcat/webapps/Scada-LTS/WEB-INF/tags
+      - ./SCADA-LTS/1.svg:/usr/local/tomcat/webapps/Scada-LTS/uploads/1.svg
+      
+      # Custom Visuals (JSP/Tags only) - NO SECURITY.XML
+      - ./SCADA-LTS/jsp:/honeypot_stage/jsp
+      - ./SCADA-LTS/tags2:/honeypot_stage/tags
+
     networks:
       lts_network:
         ipv4_address: 172.25.0.2
     links:
       - database:database
 
+    # SKRYPT STARTOWY - BEZ ZMIENNYCH ($), SAME ŚCIEŻKI
+    command: 
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        echo "--- [Honeypot] Start procedury startowej... ---"
+        
+        # Wejdz do katalogu
+        cd /usr/local/tomcat/webapps/Scada-LTS
+        
+        # KROK 1: Rozpakowanie WAR (sciezki na sztywno)
+        if [ ! -d "WEB-INF" ]; then
+          echo "--- [Honeypot] Brak WEB-INF. Szukam pliku WAR... ---"
+          
+          if [ -f "/usr/local/tomcat/webapps/Scada-LTS.war" ]; then
+             jar -xvf /usr/local/tomcat/webapps/Scada-LTS.war > /dev/null
+             echo "--- [Honeypot] Sukces: Rozpakowano Scada-LTS.war ---"
+          else
+             echo "--- [BLAD KRYTYCZNY] Nie widze pliku WAR! Oto co widze w katalogu webapps: ---"
+             ls -la /usr/local/tomcat/webapps/
+             echo "--- Koniec listy plikow ---"
+             exit 1
+          fi
+        else
+          echo "--- [Honeypot] Aplikacja juz rozpakowana. ---"
+        fi
+
+        # KROK 2: Wgrywanie modyfikacji wizualnych
+        echo "--- [Honeypot] Wgrywanie modyfikacji wygladu... ---"
+
+        if [ -d /honeypot_stage/jsp ]; then
+          cp -r /honeypot_stage/jsp/* WEB-INF/jsp/
+          echo " -> OK: pliki JSP"
+        fi
+
+        if [ -d /honeypot_stage/tags ]; then
+          cp -r /honeypot_stage/tags/* WEB-INF/tags/
+          echo " -> OK: pliki TAGS"
+        fi
+
+        # KROK 3: Start serwera
+        echo "--- [Honeypot] Uruchamianie Tomcata... ---"
+        exec /usr/local/tomcat/bin/catalina.sh run
+
   # ---------------------------------------------------------
-  # PLC 1
+  # PLCs & Simulator (Bez zmian)
   # ---------------------------------------------------------
   plc1:
     build:
       context: ./plc_1_docker
     container_name: lts_plc1_sswat
     ports:
-      - "2502:502"   # Modbus Port
-      - "28080:8080" # Web Interface Port
+      - "2502:502"   
+      - "28080:8080" 
       - "29090:9090"
     networks:
       lts_network:
         ipv4_address: 172.25.0.3
 
-  # ---------------------------------------------------------
-  # PLC 2
-  # ---------------------------------------------------------
   plc2:
     build:
       context: ./plc_2_docker
@@ -95,9 +134,6 @@ services:
       lts_network:
         ipv4_address: 172.25.0.4
 
-  # ---------------------------------------------------------
-  # PLC 3
-  # ---------------------------------------------------------
   plc3:
     build:
       context: ./plc_3_docker
@@ -110,9 +146,6 @@ services:
       lts_network:
         ipv4_address: 172.25.0.5
 
-  # ---------------------------------------------------------
-  # PHYSICAL PROCESS SIMULATOR
-  # ---------------------------------------------------------
   simulator:
     build:
       context: ./physical_sim_docker
@@ -125,9 +158,6 @@ services:
       lts_network:
         ipv4_address: 172.25.0.6
 
-# ---------------------------------------------------------
-# NETWORK CONFIGURATION
-# ---------------------------------------------------------
 networks:
   lts_network:
     name: lts_network

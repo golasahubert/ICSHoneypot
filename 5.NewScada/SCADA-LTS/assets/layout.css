@@ -19,7 +19,6 @@
 
 /* LAYOUT STYLES */
 html > body {
-	background-color: var(--bg-light);
 	margin: 0px;
 	padding: 0px;
 }
@@ -45,17 +44,13 @@ a.titleLink, a.titleLink:visited, a.titleLink:link {
 #mainHeader .logo-section {
 	display: flex;
 	flex-direction: column;
-	padding: 5px;
 }
 #mainHeader .logo-section--title,
 #mainHeader .logo-section--details {
 	display: flex;
 }
 #mainHeader .logo-section #logo {
-	max-height: 100px;
-	border-radius: 50px;
-	border: 1px solid black;
-	padding: 2px;
+	max-height: 32px;
 }
 #mainHeader .logo-section #company-container {
 	align-self: end;
@@ -68,12 +63,10 @@ a.titleLink, a.titleLink:visited, a.titleLink:link {
 }
 #mainHeader .logo-section--details {
 	padding-bottom: 3px;
-	display: none;
 }
 
 #mainHeader .logo-section--details > * {
 	padding: 0 5px;
-	display: none;
 }
 #mainHeader #powered-by {
 	font-weight: bold;
@@ -85,7 +78,6 @@ a.titleLink, a.titleLink:visited, a.titleLink:link {
 #mainHeader #scada-details--github {
 	font-style: italic;
 	opacity: 50%;
-	display: none;
 }
 #mainHeader #scada-details--os {
 	opacity: 50%;
@@ -99,7 +91,6 @@ a.titleLink, a.titleLink:visited, a.titleLink:link {
 	display: flex;
     justify-content: space-between;
 	min-width: 500px;
-	
 }
 #navbarUserInfo {
 	margin-right: 30px;
@@ -143,7 +134,7 @@ a.rowHeaderLink, a.rowHeaderLink:visited, a.rowHeaderLink:link, a.rowHeaderLink:
 	font-weight: bold;
 }
 .formVeryShort {
-	width: 45px;
+	width: 30px;
 }
 .formShort {
 	width: 50px;
@@ -210,8 +201,6 @@ input[type="submit"], input[type="button"] {
 	position:relative;
 	margin: 0px;
 	padding: 0px;
-	overflow-x: auto;
-	max-width: 100%;
 }
 #viewContent img {
 	display: block;
@@ -230,13 +219,7 @@ input[type="submit"], input[type="button"] {
 .simpleRenderer, .simpleRenderer2 {
     white-space:nowrap;
     text-align:left;
-	font-weight: bold;
-	font-size: 18px;
-	color: white;
-	 text-shadow: -1px -1px 0 black,
-                 1px -1px 0 black,
-                 -1px 1px 0 black,
-                 1px 1px 0 black;
+	font-weight: normal;
 }
 
 .simpleRenderer {
@@ -359,8 +342,8 @@ html > body .dojoFloatingPaneClient img, #help img {
 }
 
 img[src$="blue.png"], img[src$="accept.png"], img[src$="theme.png"], img[src^="images/"]:not(#viewBackground){
-	height: 30px;
-	width: 30px;
+	height: 16px;
+	width: 16px;
 }
 
 /* *** Main *** */
@@ -449,9 +432,4 @@ form.view-edit-form {
 }
 textarea#cssEditor {
     white-space: pre-wrap !important;
-}
-
-#viewContent input[type='button'] {
-    text-align: center;
-    vertical-align: middle;
 }

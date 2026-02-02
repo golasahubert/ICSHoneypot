@@ -5,7 +5,7 @@ cd "$(dirname "$0")"  # Change to the directory of the script
 
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
-
+sudo rm -rf db_data
 echo "[+] Updating APT and installing required system packages..."
 sudo apt update
 sudo apt install -y python3-venv docker.io docker-compose
