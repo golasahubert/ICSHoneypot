@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom HMI</title>
+    <title>Water Treatment Facility</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -149,11 +149,11 @@
                         <h2 class="text-2xl font-semibold text-white">${name}</h2>
                         <div class="flex items-center gap-2">
                             <div id="status-dot-${safeName}" class="status-dot status-disconnected"></div>
-                            <span id="status-text-${safeName}" class="text-sm font-medium text-gray-400">Inizializzazione...</span>
+                            <span id="status-text-${safeName}" class="text-sm font-medium text-gray-400">Initialization...</span>
                         </div>
                     </div>
                     <div id="data-container-${safeName}" class="space-y-4">
-                        <p class="text-center text-gray-500">In attesa di dati...</p>
+                        <p class="text-center text-gray-500">Waiting for data...</p>
                     </div>
                     ${isMonitor ? `
                     <div class="mt-4 p-3 bg-blue-900 bg-opacity-20 rounded-lg">
@@ -190,7 +190,7 @@
             
             if (plcState.status === 'Connected') {
                 statusDot.classList.add('status-connected');
-                statusText.textContent = 'Connesso';
+                statusText.textContent = 'Connected';
                 
                 let content = '';
                 const plcData = plcState.data;
@@ -242,11 +242,11 @@
             } else if (plcState.status === 'Disconnected') {
                 statusDot.classList.add('status-disconnected');
                 statusText.textContent = 'Disconnesso';
-                dataContainer.innerHTML = '<p class="text-center text-gray-500">Connessione persa...</p>';
+                dataContainer.innerHTML = '<p class="text-center text-gray-500">Connection lost...</p>';
             } else {
                 statusDot.classList.add('status-error');
                 statusText.textContent = 'Errore';
-                dataContainer.innerHTML = '<p class="text-center text-yellow-500">Errore durante la lettura dei dati.</p>';
+                dataContainer.innerHTML = '<p class="text-center text-yellow-500">Error while reading the data.</p>';
             }
         }
     }
