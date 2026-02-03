@@ -1,37 +1,58 @@
-# lightweight_physical_process_simulators_ICS_honeypot - In this project, there are 2 folders
+# Collection of lightweight ICS Honeypots
 
-For details about the way of working of the system, please see the README file inside each of the folder or refer to the original repository.
-
-- First one - scadaBR - contains the environement that contains of PLCs 1,2,3, physical simulator that send data to PLCs and the Human Machine Interface (ScadaBR version). The HMI is configured in a way that allows person (potential malicious actor) to interact with the system by changing the values of High/Low setpoint for every PLC and turning on and off the Pumps and valves. Changes made in HMI are transferred into PLCs.
-- Second one - scadaLTS - is exactly the same system, the main difference is that it uses Scada-LTS as a HMI, which is newer version of that HMI. It also uses mySQL database as Scada-LTS requires a database to store its data
-## To run the system, 
-
-1. First ensure that docker.io and docker-compose are installed.
-2. Move into directory of desired environment, each of the folder contains scripts that are resposnible for managing the system:
-   - build_system.sh - shell script that pulls images of each component, builds and configures the system, performs automation (navigating website, imporitng the data, applying changes). **Use this script when running the system for the first time**. After running this script and performing configuration, the system will be restarted and can be accessed in the browser
-   - stop_system.sh - used to stop the system, saving the state
-   - start_system.sh - reasume working of the system
-   - kill_docker.sh - remove all docker containers, networks. **After executing that script, running the system must be done using build_system.sh script**
-
-## Bugs and Fixes
-
-System has been tested on Linux Mint, Lubuntu, Debian and Ubuntu 24.04 (note that in Ubuntu 24.04 some packages are not available via sudo apt tool, so additional mirrors are configured). 
-The system works on OS with GUI, while running the system on CLI-based OS (e.g inside WSL), there might appear bugs connected to playwright library accessing the OpenPLC interface via browser.
-Sometimes, even on a system with GUI, naviagting the environment and configuring via playwirght might fail. This can happen due to OpenPLCS websites not being loaded, in that case please use the build_system.sh script once again, then it should work.
-
-Sometimes while running the build_system.sh there might appear an error regarding not being able to install some dependencies. Running the script again should resolve that.
-
-Another bug is that when running the system, exiting and tryinh to run it again we may encoutner error saying that container names are in use, in that case use command
-
-#sudo docker prune container -f#
-
-## Addressing and Accessing the interface
-
-Each evnironment is a different network
+In this folder there are 4 versions of projects with OpenPLCs imitating PLCs used in SWaT (Simplified Water Treatment). There is also python script to introduce realistic simulation of physcial processes between these tanks.
+There are 3 tanks - PLCs 1,2,3. Water flows from the biggest tank to middle, then to smallest tank. This simulates real world process.
 
 
-## Changes made in either HMI are reflected in the PLCs environemnt.
 
-This is done by point links. There are virtual data sources that are only visible in the graphical view, they are triggered by change on those data sources (data points inside data sources). Then, the value is copied onto registers of PLCs, mapping can be seen on picture below
-![obraz](https://github.com/user-attachments/assets/1ca87e39-610f-4227-939a-0b3e22e0b768)
+## 1. Custom HMI (singapore-001)
+
+This HMI is fully custom HMI based on Tailwind CSS and Node.js/Express.js, For more information head to folder of this HMI. This HMI does not have any  interactive features (no login/no buttons) which encourages attackers to dig deeper into the exposed PLC2 (modbus)
+
+<img width="1807" height="901" alt="image" src="https://github.com/user-attachments/assets/6d63dcff-e12c-43e0-ad19-53d5cf418d9c" />
+
+## 2. ScadaBR (singapore-002)
+
+This HMI uses ScadaBR in its latest version, there are also buttons which attacker can use to play with the system
+
+<img width="1209" height="702" alt="image" src="https://github.com/user-attachments/assets/88b69559-a7c9-4617-8375-68765b8c711b" />
+
+## 3. ScadaBR without buttons (singapore-003)
+
+Same as before, only difference is that there are no buttons.
+
+<img width="1209" height="702" alt="image" src="https://github.com/user-attachments/assets/673d74a1-616a-40fa-ae14-117d9b2d3e5d" />
+
+
+## 4. ScadaLTS v2.7.4
+
+This HMI uses ScadaLTS v2.7.4 which is vulnerable to https://nvd.nist.gov/vuln/detail/CVE-2023-33472
+
+<img width="1209" height="702" alt="image" src="https://github.com/user-attachments/assets/57bec638-278c-4271-88c6-ed1e6b39d264" />
+
+
+
+## Common Features 
+
+To run any system please use bash script 
+```console
+sudo bash build_system.sh
+```
+which scripts are located in every folder. This script uses docker-compose.yml file to define properties as names, addressing, ports for each component. Those properties are common for HMIs 2-4. This script first cleans up previous ALL docker networks and containers, and build the system. This script can be used after compromising the system to build system once over. After builidng the system, this scripts performs automatic import of data (automation folder) dataHMI.txt contains json of all properties that are imported. Then system restarts the OpenPLCs (required).
+
+Stopping and starting the system is done via stop/start_system.sh script.
+
+Users defined in 2-4 are admin/admin and user/user123.
+
+Each 1-4 has PLC2 Tank modbus port exposed 502.
+
+Each System has also nginx proxy configured in a way so that after entering the IP address, it redirects to HMI url
+
+## Logging 
+
+Logging is done by running tcpdump which generates pcap files and later they are donwloaded by external server. There are also nginx logs, but since we want to focus on MODBUS traffic, they are not used
+
+## Alerting 
+
+ICSAgent is and Agent that needs to be configured and will send a Telegram notification whenever system is compromised or not working. Refer to ICSAgent repo for more information
 
