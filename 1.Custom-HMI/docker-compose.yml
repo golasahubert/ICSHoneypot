@@ -38,7 +38,7 @@ services:
       context: ./plc_2_docker
     container_name: plc2_sswat
     ports:
-      - "3502:502"
+      - "502:502"
       - "38080:8080"
       - "39090:9090"
     networks:
