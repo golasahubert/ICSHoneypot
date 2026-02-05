@@ -9,7 +9,8 @@ sudo apt install -y python3-venv docker.io docker-compose
 
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
-
+echo "Removing DB Storage"
+sudo docker volume rm $(sudo docker volume ls -q | grep db_storage)
 echo "[+] Ensuring that all docker networks are dead"
 sudo docker-compose down
 sudo docker network prune -f
