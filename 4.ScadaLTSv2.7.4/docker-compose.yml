@@ -14,6 +14,12 @@ services:
     command: --sql_mode="NO_ENGINE_SUBSTITUTION"
     volumes:
       - db_storage:/var/lib/mysql
+    # Healthcheck sprawdza, czy baza faktycznie przyjmuje połączenia
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "scadalts", "-pscadalts"]
+      timeout: 5s
+      retries: 10
+      interval: 10s
     networks:
       lts_network:
         ipv4_address: 172.25.0.9
@@ -31,9 +37,10 @@ services:
       - SCADALTS_DB_USER=scadalts
       - SCADALTS_DB_PASS=scadalts
     ports:
-      - "8080:8080"  # Otwarty port bezpośredni
+      - "8080:8080"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
       - ./tomcat_log:/usr/local/tomcat/logs:rw
     restart: always
