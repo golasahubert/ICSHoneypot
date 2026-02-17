@@ -1600,56 +1600,6 @@
          "tolerance":0.0
       }
    ],
-   "pointLinks":[
-      {
-         "xid":"PL_935190",
-         "sourcePointId":"DP_521556",
-         "targetPointId":"DP_078771",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      },
-      {
-         "xid":"PL_907691",
-         "sourcePointId":"DP_422594",
-         "targetPointId":"DP_390868",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      },
-      {
-         "xid":"PL_864336",
-         "sourcePointId":"DP_333089",
-         "targetPointId":"DP_477416",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      },
-      {
-         "xid":"PL_082912",
-         "sourcePointId":"DP_491596",
-         "targetPointId":"DP_850434",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      },
-      {
-         "xid":"PL_546204",
-         "sourcePointId":"DP_838393",
-         "targetPointId":"DP_222666",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      },
-      {
-         "xid":"PL_595101",
-         "sourcePointId":"DP_723773",
-         "targetPointId":"DP_917059",
-         "event":"CHANGE",
-         "disabled":false,
-         "script":""
-      }
-   ],
    "users":[
       {
          "dataSourcePermissions":[
@@ -1713,49 +1663,6 @@
          "name":"(unnamed)"
       },
       {
-         "xid":"WL_576039",
-         "user":"admin",
-         "dataPoints":[
-         ],
-         "sharingUsers":[
-         ],
-         "name":"(unnamed)"
-      },
-      {
-         "xid":"WL_093740",
-         "user":"admin",
-         "dataPoints":[
-            "DP_078771",
-            "DP_922094",
-            "DP_390868",
-            "DP_582174",
-            "DP_337889",
-            "DP_115799",
-            "DP_472965",
-            "DP_477416",
-            "DP_394876",
-            "DP_850434",
-            "DP_282254",
-            "DP_812862",
-            "DP_179730",
-            "DP_222666",
-            "DP_769112",
-            "DP_917059",
-            "DP_064319",
-            "DP_172628",
-            "DP_619178",
-            "DP_521556",
-            "DP_422594",
-            "DP_333089",
-            "DP_491596",
-            "DP_838393",
-            "DP_723773"
-         ],
-         "sharingUsers":[
-         ],
-         "name":"(unnamed)"
-      },
-      {
          "xid":"WL_832632",
          "user":"admin",
          "dataPoints":[
@@ -1777,7 +1684,7 @@
          ],
          "sharingUsers":[
          ],
-         "name":"(unnamed)"
+         "name":"1"
       }
    ],
    "scripts":[
