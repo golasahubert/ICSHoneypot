@@ -1,0 +1,92 @@
+*{background-color:transparent !important; color:#000 !important; font-size:12px !important;line-height:20px !important; padding:0 !important;margin:0;font-weight:normal !important;width:initial!important;height:initial!important}
+select{border:0;outline:0;margin:0;padding:0;-webkit-appearance:none;-moz-appearance:none;}
+select::-ms-expand{display:none}
+td{border:0 !important}
+
+#Header_Language_Time_Date{display:none}
+#MainMenu_Area{display:none}
+tr.Header_Area td{display:block}
+tr.Header_Area td img{display:block;position:relative;left:-42px}
+#Header_Title_Description{font-size:20px !important;line-height:30px !important;margin:50px 0 0 0;}
+.Title_Area{display:block;width:auto;height:initial;margin-top:12px;}
+.Title_Area_Table td{display:none}
+.Title_Area_Table td.Title_Area_Name{display:inline;font-size:16px !important;font-weight:bold !important;}
+.Second_Nav_Menu td{display:none}
+.Second_Nav_Menu .Second_Nav_Menu_Selected{display:block; border:0;text-align:left;margin-bottom:16px;position:relative;top:-16px}
+.Second_Nav_Menu a{font-size:16px !important;font-weight:bold !important}
+.Data_Area{table-layout:fixed; width:670px !important}
+.table_position{display:block;margin-top:24px;}
+.main_table{table-layout:fixed; width:670px !important}
+
+table.data-table.first-column tr.sub-header td{font-weight:bold !important}
+table.data-table.first-column tr.sub-header td, table.data-table tr.header td:first-child{font-weight:bold !important}
+
+#CPU{display:none}
+
+#MemoryUsage{width:auto;margin:0}
+#MemoryUsage .usage{margin:auto;white-space:nowrap}
+#MemoryUsage .usage .text,#MemoryUsage .usage .progress-bar{display:none;height:0}
+#MemoryUsage .usage h4{width:40mm !important;float:left;text-align:right;padding-right:5px;font-weight:normal;margin-right:5px}
+#MemoryUsage .usage h4:after{content:":"}
+
+#ContentIFrameTable,#MWSL_2531,#LongText{width:100% !important}
+#diag_table tr:first-child td{border-bottom:1px solid black !important}
+.ContentTextTable{width:100% !important}
+#ContentIFrameTable{height:300px !important;overflow:hidden;}
+#MWSL_2531{height:300px!important;border-top:2px solid gray}
+#LongText{height:300px!important;width:100% !important}
+.ContentDetailLine td{font-weight:bold !important}
+#diag_table td{padding:0px 3px !important;width:auto !important}
+#diag_table_page {overflow:hidden}
+#diag_table .table_row.row_selected td{text-decoration:underline !important}
+
+#BgzTableFrame,#bgz_table_rgt,#BgzDetailFrame,#BgzSecNavInfo{width:100% !important}
+#bgztablebody{overflow:hidden;}
+#BgzTableFrame{height:250px !important}
+#BgzDetailFrame{height:400px !important;border-top:2px solid gray}
+#BgzSecNavInfo{height:300px !important}
+.Bgz_SecNav_Content .Second_Nav_Menu .Second_Nav_Menu_Selected{position:static !important;font-size:12px !important}
+#bgz_table_rgt{margin-top:16px}
+#bgz_table_rgt tr:first-child td{border-bottom:1px solid black !important}
+#bgz_table_rgt a{text-decoration:none}
+#bgz_table_rgt .table_row.row_selected td{text-decoration:underline !important}
+#bgz_table_rgt .BGZ_Details, #bgz_table_rgt .BGZ_No_Sort_Header{display:none}
+
+#connection-list,#connection-list table,#connection-data,#connection-data-header,#connection-data-content{position:static}
+.ContentTableConnections{width:100% !important}
+.ContentTableConnections thead td{border-bottom:1px solid black !important}
+.ContentTableConnections td{padding:0px 3px !important;width:auto !important}
+.ContentTableConnections .row_selected td{text-decoration:underline !important}
+#connection-data-header{border-top:2px solid gray;font-weight:bold !important}
+.ContentLongText td{border:0}
+.ContentLongText .OComContentStaticLongHeader{font-weight:bold !important}
+
+#varstate_table, #watch_table{width:670px !important;}
+#varstate_table .table_description_line{display:none}
+.varstate_submit_field{display:none}
+#watch_table td, #varstate_table td{border:0}
+.vartable_header td, .vartable_header td{border-bottom:1px solid black !important}
+#varstate_table td ~ td ~ td ~ td{display:none}
+#watch_table td ~ td ~ td ~ td{word-break:break-all}
+#watch_table td ~ td ~ td ~ td ~ td {display:none}
+#watch_table td ~ td ~ td ~ td ~ td ~ td ~ td {display:table-cell}
+#varstate_table #varstate_newvar{display:none}
+#varstate_table .varstate_address_field.invalid{font-style: italic}
+#varstate_table .vartable_static_field{word-break: break-all}
+
+.Title_Area_Selectbox{display:block}
+.Title_Area_Selectbox select{display:block}
+
+#FileOperationsTable{display:none;width:auto}
+#FilebrowserTable{margin-top:16px}
+#FilebrowserTable a{text-decoration:none}
+#FilebrowserTable td{border:0}
+#FilebrowserTable tr:first-child td{border-bottom:1px solid black!important}
+#FilebrowserTable td{width:auto !important}
+#FilebrowserTable td ~td ~td ~td ~td{display:none}
+#Bgz_Navlink, #Bgz_Navlink a{text-decoration: none !important; font-weight:bold!important}
+
+
+#Restore_Area{margin-top:16px}
+.BR_Subtitle{font-weight:bold !important}
+
