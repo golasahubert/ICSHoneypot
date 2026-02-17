@@ -1696,7 +1696,22 @@
    ],
    "pointHierarchy":[
    ],
+   "eventHandlers":[
+   ],
    "watchLists":[
+      {
+         "xid":"WL_429590",
+         "user":"admin",
+         "dataPoints":[
+            "DP_078771",
+            "DP_922094",
+            "DP_394876",
+            "DP_769112"
+         ],
+         "sharingUsers":[
+         ],
+         "name":"(unnamed)"
+      },
       {
          "xid":"WL_576039",
          "user":"admin",
