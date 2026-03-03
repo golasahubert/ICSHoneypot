@@ -9,6 +9,7 @@ ssh-add /home/denispi/.ssh/deploys
 BASE_DIR="/home/denispi/data-collection/hmi-deploy-logs"    
 
 # VPS array: "VPS_name user@IP_VPS log_Directory"
+# Recall: no "," at the end of each line
 VPS_LIST=(
     "custom-hmi singapore-001-DC2 /var/log/tcpdump"
     #other VPS
@@ -21,6 +22,6 @@ for VPS in "${VPS_LIST[@]}"; do
 
     LOCAL_DIR="$BASE_DIR/$NAME/"
     mkdir -p "$LOCAL_DIR"
-    rsync -avz --partial "$USER_HOST:$REMOTE_DIR/" "$LOCAL_DIR/"
+    rsync -avz --partial -e "ssh" "$USER_HOST:$REMOTE_DIR/" "$LOCAL_DIR/"
 
 done
