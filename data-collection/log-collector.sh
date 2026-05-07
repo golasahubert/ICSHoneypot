@@ -3,10 +3,10 @@
 
 # start ssh agent and add the private key
 eval "$(ssh-agent -s)"
-ssh-add /home/denispi/.ssh/deploys
+ssh-add /home/$USER/.ssh/deploys
 
 # name of the directory to save the files
-BASE_DIR="/home/denispi/data-collection/hmi-deploy-logs"    
+BASE_DIR="/home/$USER/data-collection/hmi-deploy-logs"    
 
 # VPS array: "VPS_name user@IP_VPS log_Directory"
 # Recall: no "," at the end of each line
