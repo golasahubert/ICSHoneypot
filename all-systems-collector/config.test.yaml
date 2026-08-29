@@ -1,0 +1,44 @@
+ack_url: ''
+log_dir: ./logs
+max_runtime_seconds: 20
+per_file: false
+plcs:
+- host: 127.0.0.1
+  name: PLC1 (T-201 Control)
+  points:
+  - address: 0
+    count: 1
+    datatype: uint16
+    name: level
+    scale: 1.0
+    type: input
+  - address: 0
+    count: 1
+    datatype: uint16
+    name: pump
+    type: coil
+  port: 2502
+  unit_id: 1
+- host: 127.0.0.1
+  name: PLC2 (T-202 Monitor)
+  points:
+  - address: 0
+    count: 1
+    datatype: uint16
+    name: level
+    scale: 1.0
+    type: input
+  port: 502
+  unit_id: 1
+- host: 127.0.0.1
+  name: PLC3 (T-203 Control)
+  points:
+  - address: 0
+    count: 1
+    datatype: uint16
+    name: level
+    scale: 1.0
+    type: input
+  port: 4502
+  unit_id: 1
+poll_interval_ms: 1000

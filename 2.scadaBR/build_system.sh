@@ -34,6 +34,7 @@ fi
 echo "[+] Activating virtual environment..."
 source venv/bin/activate
 
+
 if [ -f "requirements.txt" ]; then
   echo "[+] Installing Python dependencies..."
   pip install --upgrade pip

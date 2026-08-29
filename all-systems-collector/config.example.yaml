@@ -1,0 +1,48 @@
+# Unified collector example config
+max_runtime_seconds: 0      # 0 = run forever
+poll_interval_ms: 1000
+log_dir: "./logs"
+per_file: false            # true = write one JSON file per snapshot, false = append to JSONL
+ack_url: ""               # optional: POST each snapshot to this URL
+
+plcs:
+  - name: "PLC1 (T-201 Control)"
+    host: "127.0.0.1"
+    port: 2502
+    unit_id: 1
+    points:
+      - name: "level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+      - name: "pump"
+        type: "coil"
+        address: 0
+        count: 1
+        datatype: "uint16"
+
+  - name: "PLC2 (T-202 Monitor)"
+    host: "127.0.0.1"
+    port: 502
+    unit_id: 1
+    points:
+      - name: "level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+
+  - name: "PLC3 (T-203 Control)"
+    host: "127.0.0.1"
+    port: 4502
+    unit_id: 1
+    points:
+      - name: "level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0

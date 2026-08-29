@@ -1,0 +1,63 @@
+# ============================================================================
+# COLLECTOR SERVICE CONFIGURATION
+# For 24/7 continuous Modbus data collection with systemd management
+# ============================================================================
+#
+# Install:
+#   sudo cp collector.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable collector
+#   sudo systemctl start collector
+#
+# Usage:
+#   systemctl status collector       # check status
+#   journalctl -u collector -f       # tail logs in real-time
+#   systemctl restart collector      # restart service
+#   systemctl stop collector         # stop service
+#
+
+[Unit]
+Description=PLC Data Collector (Continuous Modbus)
+Documentation=file:///opt/plc-collector/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Security: run as unprivileged user
+User=plc-collector
+Group=plc-collector
+
+# Working directory
+WorkingDirectory=/opt/plc-collector
+
+# Main process
+ExecStart=/opt/plc-collector/venv/bin/python /opt/plc-collector/final_collector.py --config /opt/plc-collector/config.yaml
+
+# Auto-restart on failure
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=300
+StartLimitBurst=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=plc-collector
+
+# Resource limits
+MemoryLimit=100M
+CPUAccounting=yes
+MemoryAccounting=yes
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+
+# Termination behavior
+KillMode=process
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

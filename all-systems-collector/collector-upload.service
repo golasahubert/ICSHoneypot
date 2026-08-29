@@ -1,0 +1,35 @@
+# ============================================================================
+# UPLOADER SERVICE (triggered by collector-upload.timer)
+# Uploads hourly log files to remote ingest server via rsync over SSH
+# ============================================================================
+#
+# This service is triggered by collector-upload.timer every hour.
+# It syncs completed hourly logs to remote server and compresses local archive.
+#
+
+[Unit]
+Description=PLC Collector - Upload Hourly Logs (rsync)
+Documentation=file:///opt/plc-collector/README.md
+After=collector.service
+
+[Service]
+Type=oneshot
+
+# Security
+User=plc-collector
+Group=plc-collector
+
+# Working directory
+WorkingDirectory=/var/log/plc-collector
+
+# Execute uploader script
+ExecStart=/opt/plc-collector/uploader.sh
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=plc-collector-upload
+
+# Termination
+TimeoutStartSec=300
+KillMode=process

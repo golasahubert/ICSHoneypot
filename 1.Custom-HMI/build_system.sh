@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -e  # Zatrzymuje skrypt przy każdym błędzie
+set -e  # Stop the script on any error
 cd "$(dirname "$0")"
 
-# --- KONFIGURACJA KOLORÓW ---
+# --- COLOR CONFIGURATION ---
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -16,7 +16,7 @@ err() {
     echo -e "${RED}[✘] $1${NC}"
 }
 
-# --- KROK 1: CZYSZCZENIE I INSTALACJA ZALEŻNOŚCI ---
+# --- STEP 1: CLEANUP AND DEPENDENCY INSTALLATION ---
 
 log "Ensuring that previous environment is stopped..."
 if [ -f "kill_docker.sh" ]; then
@@ -26,7 +26,6 @@ else
 fi
 
 log "Updating APT and installing required system packages..."
-# Usunąłem netcat, bo wracamy do sleep
 sudo apt update
 sudo apt install -y python3-venv docker.io docker-compose
 
@@ -35,17 +34,15 @@ if [ -f "kill_docker.sh" ]; then
     sudo bash kill_docker.sh
 fi
 
-# --- KROK 2: BUDOWANIE I START ---
+# --- STEP 2: BUILDING AND STARTING CONTAINERS ---
 
 log "Building and Starting containers..."
 sudo docker-compose up -d --build
 
 log "Waiting for containers to initialize..."
-# POWRÓT DO LOGIKI SKRYPTU 2: Prosty sleep zamiast pętli.
-# Zwiększyłem do 10s dla bezpieczeństwa (bazy danych), ale to tylko pauza.
 sleep 10
 
-# --- KROK 3: PYTHON I PLAYWRIGHT ---
+# --- STEP 3: PYTHON AND PLAYWRIGHT SETUP ---
 
 log "Setting up Python virtual environment..."
 cd automation
@@ -55,26 +52,39 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv || { err "Failed to create virtual environment."; exit 1; }
 fi
 
-# Definicja ścieżek do venv
+# Fix any broken ownership (e.g. from a previous accidental sudo pip install)
+log "Fixing venv ownership (if needed)..."
+sudo chown -R "$(whoami)":"$(whoami)" venv
+
+# Define paths to the venv binaries
 VENV_PYTHON="$(pwd)/venv/bin/python"
 VENV_PIP="$(pwd)/venv/bin/pip"
 VENV_PLAYWRIGHT="$(pwd)/venv/bin/playwright"
 
+log "Upgrading pip..."
+$VENV_PIP install --upgrade pip
+
+# --- FIX: greenlet / Playwright / Python 3.14 compatibility ---
+# Older Playwright versions pull in an outdated greenlet version that
+# fails to compile on Python 3.14 (removed PyThreadState->trash field).
+# We install a compatible greenlet and playwright first, before requirements.txt.
+log "Pre-installing compatible greenlet and playwright versions..."
+$VENV_PIP install --upgrade "greenlet>=3.5.1"
+$VENV_PIP install --upgrade playwright
+
 if [ -f "requirements.txt" ]; then
     log "Installing Python dependencies..."
-    $VENV_PIP install --upgrade pip
-    $VENV_PIP install -r requirements.txt
+    $VENV_PIP install --ignore-installed greenlet -r requirements.txt
 fi
 
-# --- SEKCJA PLAYWRIGHT ---
-# Sprawdzamy czy playwright się zainstalował w venv
+# --- PLAYWRIGHT SECTION ---
 if [ -f "$VENV_PLAYWRIGHT" ]; then
     log "Installing Playwright browsers and dependencies..."
-    
-    # 1. Instalacja binarek przeglądarek
+
+    # 1. Install browser binaries
     $VENV_PLAYWRIGHT install
-    
-    # 2. Instalacja zależności systemowych (sudo)
+
+    # 2. Install system-level dependencies (requires sudo)
     sudo $VENV_PLAYWRIGHT install-deps
 else
     log "Playwright executable not found in venv. Skipping browser setup."
@@ -87,7 +97,7 @@ cd ..
 
 log "Build and setup complete."
 
-# --- KROK 4: RESTART KOŃCOWY ---
+# --- STEP 4: FINAL RESTART ---
 
 log "Restarting the environment..."
 

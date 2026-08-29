@@ -1,0 +1,108 @@
+# ============================================================================
+# FINAL PLC DATA COLLECTOR - Configuration Example
+# ============================================================================
+# 
+# This configuration file controls:
+# - How the collector runs (continuous or for X seconds)
+# - Poll interval (how often to read PLC data)
+# - PLC addresses and ports
+# - Which fields to read from each PLC
+# - Output format (JSON Lines or single JSON per snapshot)
+# - Output fields (customize which data gets saved to file)
+#
+# ============================================================================
+
+# RUNTIME MODE
+# ============
+# Choose how the collector runs:
+#   - mode: "continuous"        => runs forever (Ctrl+C to stop)
+#   - mode: "duration"          => runs for duration_seconds, then exits
+runtime:
+  mode: "duration"              # "continuous" or "duration"
+  duration_seconds: 20          # applies only if mode: "duration"
+
+# POLLING AND OUTPUT
+# ==================
+polling:
+  interval_ms: 1000             # read PLC every N milliseconds (1000ms = 1Hz)
+
+output:
+  dir: "./logs"                 # directory where files are saved (relative to config location)
+  format: "jsonl"               # "jsonl" (one-line per snapshot) or "json" (single file)
+  # Optional: POST each snapshot to this URL for real-time ingestion
+  # Leave empty string to disable
+  ack_url: ""
+
+# OUTPUT FIELDS
+# =============
+# Customize which fields appear in the output JSON.
+# Define a schema with: timestamp, duration, data
+# 
+# "timestamp" : always ISO 8601 UTC
+# "duration" : runtime so far in seconds (optional)
+# "data" : per-PLC data (controlled by 'include_data' below)
+output_fields:
+  include_timestamp: true       # always include ISO timestamp
+  include_duration: false       # include cumulative runtime (seconds)
+  include_data: true            # include the actual PLC values (from plcs config)
+  # Advanced: custom fields can be added per-PLC in the 'plcs' section below
+
+# PLC CONNECTIONS
+# ===============
+# List all PLCs to poll. Each entry defines host, port, Modbus unit ID, and points to read.
+# 
+# Structure:
+#   - name: display name (used in logs and output)
+#     host: IP or hostname
+#     port: TCP port
+#     unit_id: Modbus slave unit (usually 1)
+#     points:
+#       - name: field name in output JSON
+#         type: "input" (input register), "holding" (holding register), "coil", "discrete"
+#         address: register address (0-based)
+#         count: number of registers/coils to read (usually 1)
+#         datatype: "uint16", "int16", "uint32", "int32", "float32"
+#         scale: multiply result by this value (e.g., 0.1)
+#
+plcs:
+  - name: "PLC1 (T-201 Control)"
+    host: "127.0.0.1"
+    port: 2502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"           # input register (read-only)
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+      - name: "pump_status"
+        type: "coil"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+
+  - name: "PLC2 (T-202 Monitor)"
+    host: "127.0.0.1"
+    port: 502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+
+  - name: "PLC3 (T-203 Control)"
+    host: "127.0.0.1"
+    port: 4502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0

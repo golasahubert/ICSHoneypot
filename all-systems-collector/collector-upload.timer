@@ -1,0 +1,27 @@
+# ============================================================================
+# HOURLY LOG UPLOAD TIMER
+# Rotates and uploads hourly JSONL files to remote ingest server via rsync
+# ============================================================================
+#
+# Install:
+#   sudo cp collector-upload.timer collector-upload.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable collector-upload.timer
+#   sudo systemctl start collector-upload.timer
+#
+# Check:
+#   systemctl list-timers --all | grep collector-upload
+#   journalctl -u collector-upload.service -f
+#
+
+[Unit]
+Description=PLC Collector - Hourly Log Uploader
+Documentation=file:///opt/plc-collector/README.md
+
+[Timer]
+# Run every hour at minute 5 (give collector time to close file)
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

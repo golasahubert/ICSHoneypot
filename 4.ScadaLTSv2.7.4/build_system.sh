@@ -9,8 +9,15 @@ sudo apt install -y python3-venv docker.io docker-compose
 
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
-echo "Removing DB Storage"
-sudo docker volume rm $(sudo docker volume ls -q | grep db_storage)
+
+echo "[+] Removing DB Storage volume (if it exists)..."
+DB_VOLUMES=$(sudo docker volume ls -q | grep db_storage || true)
+if [ -n "$DB_VOLUMES" ]; then
+  sudo docker volume rm $DB_VOLUMES
+else
+  echo "[!] No db_storage volume found, skipping removal."
+fi
+
 echo "[+] Ensuring that all docker networks are dead"
 sudo docker-compose down
 sudo docker network prune -f
@@ -21,7 +28,6 @@ sudo systemctl restart docker
 echo "[+] Building Docker images..."
 sudo docker-compose up -d --build
 
-
 echo "[+] Waiting for containers to initialize..."
 sleep 5
 
@@ -30,7 +36,7 @@ cd automation
 
 if [ ! -d "venv" ]; then
   echo "[+] Creating virtual environment..."
-  python3 -m venv venv || { echo "[✘] Failed to create virtual environment."; exit 1; }
+  python3 -m venv venv || { echo "[X] Failed to create virtual environment."; exit 1; }
 fi
 
 echo "[+] Activating virtual environment..."
@@ -48,10 +54,10 @@ sudo bash setup_import.sh
 deactivate
 cd ..
 
-echo "[✔] Build and setup complete."
+echo "[OK] Build and setup complete."
 
 echo "[+] Restarting the environment..."
 sudo bash stop_system.sh
 sudo bash start_system.sh
 
-echo "[✔] Restarting Complete."
+echo "[OK] Restarting Complete."
