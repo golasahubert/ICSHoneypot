@@ -23,8 +23,12 @@
 import argparse
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
 import time
+import os
+import atexit
+import signal
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -415,9 +419,18 @@ def run_collector(config: Dict[str, Any]):
     """
     # Parse runtime configuration
     runtime_config = config.get('runtime', {})
-    runtime_mode = runtime_config.get('mode', 'continuous')
-    max_duration = int(runtime_config.get('duration_seconds', 0))
-    
+    runtime_mode = str(runtime_config.get('mode', 'continuous')).lower()
+    # Support a simple '24h' mode as requested by user: treat as duration 86400s
+    if runtime_mode in ('24h', '24:00', '24_hours'):
+        runtime_mode = 'duration'
+        max_duration = int(runtime_config.get('duration_seconds', 86400))
+    elif runtime_mode == 'duration':
+        max_duration = int(runtime_config.get('duration_seconds', 0))
+    else:
+        # 'continuous' or any unknown value => continuous
+        runtime_mode = 'continuous'
+        max_duration = 0
+
     polling_config = config.get('polling', {})
     poll_interval_ms = int(polling_config.get('interval_ms', 1000))
     
@@ -441,6 +454,74 @@ def run_collector(config: Dict[str, Any]):
     
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------------
+    # Configure file logging (rotating) into the output directory so logs follow
+    # the chosen output location. Keep console logging at INFO level.
+    # ------------------------------------------------------------------------
+    try:
+        log_file = output_path / 'collector.log'
+        file_handler = RotatingFileHandler(str(log_file), maxBytes=5 * 1024 * 1024, backupCount=5)
+        file_handler.setLevel(logging.INFO)
+        file_formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+        file_handler.setFormatter(file_formatter)
+        # Avoid adding duplicate handlers on repeated invocations
+        existing_fhs = [type(h) for h in logger.handlers]
+        if RotatingFileHandler not in existing_fhs:
+            logger.addHandler(file_handler)
+        logger.info(f"Logging to {log_file}")
+    except Exception as e:
+        logger.warning(f"Could not set up file logging: {e}")
+
+    # ------------------------------------------------------------------------
+    # Prevent overlapping runs: simple PID file lock in the output directory.
+    # If a previous PID exists and the process is alive, exit early to avoid
+    # concurrent collectors writing the same files. Stale PID files are removed.
+    # This helps when the script is started by a scheduler every 6 hours.
+    # ------------------------------------------------------------------------
+    try:
+        pid_file = output_path / 'collector.pid'
+        if pid_file.exists():
+            try:
+                existing_pid = int(pid_file.read_text().strip())
+                # Check if process exists (will raise ProcessLookupError if not)
+                os.kill(existing_pid, 0)
+                logger.error(f"Another collector process (PID {existing_pid}) appears to be running. Exiting.")
+                return
+            except ProcessLookupError:
+                # Stale PID file: remove it and continue
+                try:
+                    pid_file.unlink()
+                except Exception:
+                    pass
+            except ValueError:
+                # Unreadable PID, remove and continue
+                try:
+                    pid_file.unlink()
+                except Exception:
+                    pass
+            except Exception:
+                # If we cannot determine, warn but continue
+                logger.warning("Could not determine if existing PID is running; continuing")
+
+        # Write current PID and ensure removal on exit
+        pid_file.write_text(str(os.getpid()))
+        def _remove_pid():
+            try:
+                if pid_file.exists():
+                    pid_file.unlink()
+            except Exception:
+                pass
+        atexit.register(_remove_pid)
+
+        # Also remove PID on SIGTERM/SIGINT to be polite
+        def _handle_term(signum, frame):
+            _remove_pid()
+            sys.exit(0)
+        signal.signal(signal.SIGTERM, _handle_term)
+        signal.signal(signal.SIGINT, _handle_term)
+    except Exception as e:
+        logger.warning(f"PID lock setup failed: {e}")
     
     # Determine output filename
     if output_format == 'jsonl':
