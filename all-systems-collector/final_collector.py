@@ -523,19 +523,18 @@ def run_collector(config: Dict[str, Any]):
     except Exception as e:
         logger.warning(f"PID lock setup failed: {e}")
     
-    # Determine output filename
-    if output_format == 'jsonl':
-        snapshot_file = output_path / 'collector_data.jsonl'
-    else:
-        snapshot_file = output_path / 'collector_data.json'
-    
-    # Log startup info
+    # Determine output filename behavior
+    # Instead of a single global file, organize snapshots by month/day:
+    #   <output_dir>/<MM>/<DD>/collector_data.jsonl  (or .json)
+    # This ensures each day has its own folder and file.
+    # Keep a top-level collector.log in output_dir for process logs.
     logger.info(f"Runtime mode: {runtime_mode}")
     if runtime_mode == 'duration':
         logger.info(f"Duration limit: {max_duration} seconds")
     logger.info(f"Poll interval: {poll_interval_ms} ms ({1000/poll_interval_ms:.1f} Hz)")
     logger.info(f"Output format: {output_format}")
-    logger.info(f"Output file: {snapshot_file.resolve()}")
+    logger.info(f"Output directory: {output_path.resolve()}")
+    logger.info(f"Snapshots will be written under: <output_dir>/<MM>/<DD>/collector_data.{ 'jsonl' if output_format == 'jsonl' else 'json' }")
     logger.info(f"Number of PLCs: {len(plcs)}")
     
     start_time = time.time()
@@ -563,16 +562,25 @@ def run_collector(config: Dict[str, Any]):
                 if include_data:
                     output_snapshot['data'] = snapshot.get('data')
                 
-                # Write to file
+                # Determine daily folder (MM/DD) under output_path and ensure it exists
+                now_local = datetime.now()
+                month = now_local.strftime('%m')
+                day = now_local.strftime('%d')
+                daily_dir = output_path / month / day
+                daily_dir.mkdir(parents=True, exist_ok=True)
+
+                # Use a per-day file inside the daily folder instead of one global file
                 if output_format == 'jsonl':
-                    write_snapshot_jsonl(output_snapshot, snapshot_file)
+                    daily_file = daily_dir / 'collector_data.jsonl'
+                    write_snapshot_jsonl(output_snapshot, daily_file)
                 else:
-                    write_snapshot_json(output_snapshot, snapshot_file)
-                
+                    daily_file = daily_dir / 'collector_data.json'
+                    write_snapshot_json(output_snapshot, daily_file)
+
                 # Send ACK webhook if configured
                 if ack_url:
                     send_ack_webhook(output_snapshot, ack_url)
-                
+
                 snapshot_count += 1
                 
             except Exception as e:

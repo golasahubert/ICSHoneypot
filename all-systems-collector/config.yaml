@@ -30,7 +30,7 @@
 
 runtime:
   mode: "duration"              # "continuous", "duration" or "24h"
-  duration_seconds: 21600        # 6h = 21600 seconds
+  duration_seconds: 60        # 6h = 21600 seconds
 
 polling:
   interval_ms: 1000             # read PLC every 1000 ms (1Hz)

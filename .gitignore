@@ -6,3 +6,8 @@ scadaLTS/db_conf
 scadaLTS/db_data
 **/tomcat_log/
 **/logs/
+all-systems-collector/__pycache__
+**/logs/
+all-systems-collector/logs
+**/logs/
+all-systems-collector/venv
