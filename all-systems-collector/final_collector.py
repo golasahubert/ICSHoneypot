@@ -3,7 +3,7 @@
 # FINAL PLC DATA COLLECTOR
 # ============================================================================
 # Purpose: Read data from one or more Modbus TCP devices (PLCs) at regular
-#          intervals and write snapshots to JSON/JSONL files with full
+#          intervals and write snapshots to CSV files with full
 #          customization via YAML config.
 #
 # Usage:   python final_collector.py --config config.yaml
@@ -12,15 +12,11 @@
 #   - Runtime mode: continuous or duration-limited
 #   - Poll interval (milliseconds)
 #   - PLC addresses, ports, and points to read
-#   - Output format (JSON Lines or single JSON per snapshot)
 #   - Which fields to include in output (timestamp, duration, data)
-#
-# Output example (JSONL):
-# {"timestamp": "2026-08-29T20:23:00+00:00", "data": {"PLC1 (T-201 Control)": {"water_level": 39}}}
-# {"timestamp": "2026-08-29T20:23:01+00:00", "data": {"PLC1 (T-201 Control)": {"water_level": 39}}}
 # ============================================================================
 
 import argparse
+import csv
 import json
 import logging
 from logging.handlers import RotatingFileHandler
@@ -353,33 +349,61 @@ def collect_snapshot(
     return snapshot
 
 
-def write_snapshot_jsonl(snapshot: Dict[str, Any], output_path: Path):
-    """
-    Append a snapshot to a JSON Lines file (one JSON object per line).
-    
-    Args:
-        snapshot: The snapshot dict to write.
-        output_path: Path to JSONL file.
-    """
+def csv_fieldnames(
+    plcs_config: List[Dict[str, Any]],
+    include_timestamp: bool,
+    include_duration: bool,
+    include_data: bool
+) -> List[str]:
+    """Build a stable CSV schema from the configured PLC points."""
+    fieldnames = []
+    if include_timestamp:
+        fieldnames.append('timestamp')
+    if include_duration:
+        fieldnames.append('duration')
+
+    if include_data:
+        for plc_config in plcs_config:
+            plc_name = str(plc_config.get('name', 'unknown'))
+            for point in plc_config.get('points', []):
+                point_name = str(point.get('name', 'unnamed_point'))
+                fieldnames.append(f'{plc_name}.{point_name}')
+            fieldnames.append(f'{plc_name}._status')
+
+    return list(dict.fromkeys(fieldnames))
+
+
+def write_snapshot_csv(
+    snapshot: Dict[str, Any],
+    output_path: Path,
+    fieldnames: List[str]
+):
+    """Append one flattened snapshot to a CSV file, writing its header once."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'a', encoding='utf-8') as fh:
-        json_line = json.dumps(snapshot, ensure_ascii=False)
-        fh.write(json_line + '\n')
+    row: Dict[str, Any] = {}
+
+    if 'timestamp' in fieldnames:
+        row['timestamp'] = snapshot.get('timestamp')
+    if 'duration' in fieldnames:
+        row['duration'] = snapshot.get('duration')
+
+    data = snapshot.get('data') or {}
+    for fieldname in fieldnames:
+        if '.' not in fieldname:
+            continue
+        plc_name, point_name = fieldname.rsplit('.', 1)
+        value = data.get(plc_name, {}).get(point_name)
+        if isinstance(value, (dict, list)):
+            value = json.dumps(value, ensure_ascii=False)
+        row[fieldname] = value
+
+    file_exists = output_path.exists() and output_path.stat().st_size > 0
+    with open(output_path, 'a', encoding='utf-8', newline='') as fh:
+        writer = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction='ignore')
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(row)
     logger.info(f"Appended snapshot to {output_path}")
-
-
-def write_snapshot_json(snapshot: Dict[str, Any], output_path: Path):
-    """
-    Write a single snapshot to a JSON file (overwriting if exists).
-    
-    Args:
-        snapshot: The snapshot dict to write.
-        output_path: Path to JSON file.
-    """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'w', encoding='utf-8') as fh:
-        json.dump(snapshot, fh, ensure_ascii=False, indent=2)
-    logger.info(f"Wrote snapshot to {output_path}")
 
 
 def send_ack_webhook(snapshot: Dict[str, Any], ack_url: str, timeout: int = 10):
@@ -436,7 +460,6 @@ def run_collector(config: Dict[str, Any]):
     
     output_config = config.get('output', {})
     output_dir = output_config.get('dir', './logs')
-    output_format = output_config.get('format', 'jsonl').lower()
     ack_url = output_config.get('ack_url', '')
     
     output_fields_config = config.get('output_fields', {})
@@ -523,21 +546,26 @@ def run_collector(config: Dict[str, Any]):
     except Exception as e:
         logger.warning(f"PID lock setup failed: {e}")
     
-    # Determine output filename behavior
-    # Instead of a single global file, organize snapshots by month/day:
-    #   <output_dir>/<MM>/<DD>/collector_data.jsonl  (or .json)
-    # This ensures each day has its own folder and file.
-    # Keep a top-level collector.log in output_dir for process logs.
     logger.info(f"Runtime mode: {runtime_mode}")
     if runtime_mode == 'duration':
         logger.info(f"Duration limit: {max_duration} seconds")
     logger.info(f"Poll interval: {poll_interval_ms} ms ({1000/poll_interval_ms:.1f} Hz)")
-    logger.info(f"Output format: {output_format}")
     logger.info(f"Output directory: {output_path.resolve()}")
-    logger.info(f"Snapshots will be written under: <output_dir>/<MM>/<DD>/collector_data.{ 'jsonl' if output_format == 'jsonl' else 'json' }")
     logger.info(f"Number of PLCs: {len(plcs)}")
     
     start_time = time.time()
+    run_start_local = datetime.now().astimezone()
+    run_month = run_start_local.strftime('%m')
+    run_day = run_start_local.strftime('%d')
+    run_timestamp = run_start_local.strftime('%Y%m%d_%H%M%S')
+    csv_file = output_path / run_month / run_day / f'collector_data_{run_timestamp}.csv'
+    csv_fieldnames_list = csv_fieldnames(
+        plcs,
+        include_timestamp,
+        include_duration,
+        include_data
+    )
+    logger.info(f"CSV run file: {csv_file}")
     snapshot_count = 0
     
     try:
@@ -562,20 +590,11 @@ def run_collector(config: Dict[str, Any]):
                 if include_data:
                     output_snapshot['data'] = snapshot.get('data')
                 
-                # Determine daily folder (MM/DD) under output_path and ensure it exists
-                now_local = datetime.now()
-                month = now_local.strftime('%m')
-                day = now_local.strftime('%d')
-                daily_dir = output_path / month / day
-                daily_dir.mkdir(parents=True, exist_ok=True)
-
-                # Use a per-day file inside the daily folder instead of one global file
-                if output_format == 'jsonl':
-                    daily_file = daily_dir / 'collector_data.jsonl'
-                    write_snapshot_jsonl(output_snapshot, daily_file)
-                else:
-                    daily_file = daily_dir / 'collector_data.json'
-                    write_snapshot_json(output_snapshot, daily_file)
+                write_snapshot_csv(
+                    output_snapshot,
+                    csv_file,
+                    csv_fieldnames_list
+                )
 
                 # Send ACK webhook if configured
                 if ack_url:
@@ -614,7 +633,7 @@ def main():
       --verbose       Enable DEBUG logging
     """
     parser = argparse.ArgumentParser(
-        description='Final PLC Data Collector - Read Modbus devices, save to JSON'
+        description='Final PLC Data Collector - Read Modbus devices, save to CSV'
     )
     parser.add_argument(
         '--config',
