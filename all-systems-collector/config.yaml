@@ -7,7 +7,7 @@
 # - Poll interval (how often to read PLC data)
 # - PLC addresses and ports
 # - Which fields to read from each PLC
-# - Output format (JSON Lines or single JSON per snapshot)
+# - CSV output settings
 # - Output fields (customize which data gets saved to file)
 #
 # ============================================================================
@@ -30,14 +30,13 @@
 
 runtime:
   mode: "duration"              # "continuous", "duration" or "24h"
-  duration_seconds: 60        # 6h = 21600 seconds
+  duration_seconds: 21600     # 6h
 
 polling:
   interval_ms: 1000             # read PLC every 1000 ms (1Hz)
 
 output:
   dir: "./logs"                # wybór miejsca zapisu: ./logs albo np. /var/lib/plc-collector
-  format: "jsonl"              # "jsonl" or "json"
   ack_url: ""                  # optional webhook URL
 
 output_fields:
