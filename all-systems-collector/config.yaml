@@ -36,7 +36,7 @@ polling:
   interval_ms: 1000             # read PLC every 1000 ms (1Hz)
 
 output:
-  dir: "./logs"                # wybór miejsca zapisu: ./logs albo np. /var/lib/plc-collector
+  dir: "/var/log/plc_collector"                # wybór miejsca zapisu: ./logs albo np. /var/lib/plc-collector
   ack_url: ""                  # optional webhook URL
 
 output_fields:
