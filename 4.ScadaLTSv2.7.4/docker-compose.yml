@@ -3,6 +3,7 @@ version: '3.8'
 services:
   database:
     container_name: lts_mysql
+    restart: unless-stopped
     image: mysql:5.7
     ports:
       - "3306:3306"
@@ -51,6 +52,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx_proxy
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
@@ -65,6 +67,7 @@ services:
     build:
       context: ./plc_1_docker 
     container_name: lts_plc1_sswat
+    restart: unless-stopped
     ports:
       - "2502:502"
       - "28080:8080"
@@ -77,6 +80,7 @@ services:
     build:
       context: ./plc_2_docker
     container_name: lts_plc2_sswat
+    restart: unless-stopped
     ports:
       - "502:502"
       - "38080:8080"
@@ -89,6 +93,7 @@ services:
     build:
       context: ./plc_3_docker
     container_name: lts_plc3_sswat
+    restart: unless-stopped
     ports:
       - "4502:502"
       - "48080:8080"
@@ -101,6 +106,7 @@ services:
     build:
       context: ./physical_sim_docker
     container_name: lts_sim_sswat
+    restart: unless-stopped
     ports:
       - "5502:502"
       - "58080:8080"

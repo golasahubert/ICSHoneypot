@@ -6,6 +6,7 @@ services:
   # ---------------------------------------------------------
   database:
     container_name: mysql
+    restart: unless-stopped
     image: mysql/mysql-server:5.7
     ports:
       - "3306:3306"
@@ -34,6 +35,7 @@ services:
   # ---------------------------------------------------------
   scadalts:
     container_name: scadalts-1
+    restart: unless-stopped
     image: scadalts/scadalts:v2.7.4
     ports:
       - "8181:8080"
@@ -114,6 +116,7 @@ services:
     build:
       context: ./plc_1_docker
     container_name: lts_plc1_sswat
+    restart: unless-stopped
     ports:
       - "2502:502"   
       - "28080:8080" 
@@ -126,6 +129,7 @@ services:
     build:
       context: ./plc_2_docker
     container_name: lts_plc2_sswat
+    restart: unless-stopped
     ports:
       - "3502:502"
       - "38080:8080"
@@ -138,6 +142,7 @@ services:
     build:
       context: ./plc_3_docker
     container_name: lts_plc3_sswat
+    restart: unless-stopped
     ports:
       - "4502:502"
       - "48080:8080"
@@ -150,6 +155,7 @@ services:
     build:
       context: ./physical_sim_docker
     container_name: lts_sim_sswat
+    restart: unless-stopped
     ports:
       - "5502:502"
       - "58080:8080"

@@ -5,6 +5,7 @@ services:
     build:
       context: ./backend
     container_name: hmi-custom-backend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     networks:
@@ -15,6 +16,7 @@ services:
     build:
       context: ./frontend
     container_name: hmi-custom-frontend
+    restart: unless-stopped
     ports:
       - "80:80"
     networks:
@@ -25,6 +27,7 @@ services:
     build:
       context: ./plc_1_docker
     container_name: plc1_sswat
+    restart: unless-stopped
     ports:
       - "2502:502"
       - "28080:8080"
@@ -37,6 +40,7 @@ services:
     build:
       context: ./plc_2_docker
     container_name: plc2_sswat
+    restart: unless-stopped
     ports:
       - "502:502"
       - "38080:8080"
@@ -49,6 +53,7 @@ services:
     build:
       context: ./plc_3_docker
     container_name: plc3_sswat
+    restart: unless-stopped
     ports:
       - "4502:502"
       - "48080:8080"
@@ -61,6 +66,7 @@ services:
     build:
       context: ./physical_sim_docker
     container_name: sim_sswat
+    restart: unless-stopped
     ports:
       - "5502:502"
       - "58080:8080"
