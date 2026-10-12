@@ -8,8 +8,10 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 # Step 2: Install dependencies for playwright
+# Ubuntu 24.04+ renamed libasound2 to libasound2t64 (20.04/22.04 only have libasound2)
+if apt-cache show libasound2t64 >/dev/null 2>&1; then LIBASOUND=libasound2t64; else LIBASOUND=libasound2; fi
 sudo apt install -y python3-venv libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
-libxkbcommon0 libpango-1.0-0 libgbm1 libasound2 libxshmfence1 libdrm2 \
+libxkbcommon0 libpango-1.0-0 libgbm1 "$LIBASOUND" libxshmfence1 libdrm2 \
 libxcomposite1 libxrandr2 libxi6 fonts-liberation
 
 # Step 3: Activate virtual environment
