@@ -3,16 +3,41 @@
 set -e  # Exit on any error
 cd "$(dirname "$0")"  # Change to the directory of the script
 
-echo "[+] Ensuring that previous environment is stopped..."
-sudo bash kill_docker.sh
-sudo rm -rf db_data
+# True if all given apt packages are installed (Ubuntu 24.04+ renamed
+# some of them with a t64 suffix, e.g. libasound2 -> libasound2t64)
+pkgs_installed() {
+  for p in "$@"; do
+    dpkg-query -W -f='${Status}' "$p" "${p}t64" 2>/dev/null | grep -q "install ok installed" || return 1
+  done
+}
+
 echo "[+] Updating APT and installing required system packages..."
-sudo apt update
-sudo apt install -y python3-venv docker.io docker-compose
+if pkgs_installed python3-venv docker.io docker-compose; then
+  echo "[=] System packages already installed, skipping apt"
+else
+  sudo apt update
+  sudo apt install -y python3-venv docker.io docker-compose
+fi
 
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
 
+echo "[+] Removing DB Storage volume (if it exists)..."
+DB_VOLUMES=$(sudo docker volume ls -q | grep db_storage || true)
+if [ -n "$DB_VOLUMES" ]; then
+  sudo docker volume rm $DB_VOLUMES
+else
+  echo "[!] No db_storage volume found, skipping removal."
+fi
+
+echo "[+] Ensuring that all docker networks are dead"
+sudo docker-compose down
+sudo docker network prune -f
+
+echo "[+] Restarting Docker"
+sudo systemctl restart docker
+
+echo "[+] Building Docker images..."
 sudo docker-compose up -d --build
 
 echo "[+] Waiting for containers to initialize..."
@@ -23,7 +48,7 @@ cd automation
 
 if [ ! -d "venv" ]; then
   echo "[+] Creating virtual environment..."
-  python3 -m venv venv || { echo "[✘] Failed to create virtual environment."; exit 1; }
+  python3 -m venv venv || { echo "[X] Failed to create virtual environment."; exit 1; }
 fi
 
 echo "[+] Activating virtual environment..."
@@ -41,10 +66,14 @@ sudo bash setup_import.sh
 deactivate
 cd ..
 
-echo "[✔] Build and setup complete."
+echo "[OK] Build and setup complete."
 
 echo "[+] Restarting the environment..."
 sudo bash stop_system.sh
 sudo bash start_system.sh
 
-echo "[✔] Restarting Complete."
+echo "[OK] Restarting Complete."
+
+echo "[+] Installing PLC data collector service (plc-collector)..."
+# Server 5 publishes PLC2 Modbus on host port 3502, hence 5.config.yaml
+sudo bash ../all-systems-collector/install_service.sh 5.config.yaml

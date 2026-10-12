@@ -1,2 +1,0 @@
-<link href="resources/js-ui/ds/css/sleep-and-reactivation-ds-component.css" rel="stylesheet" type="text/css">
-<!-- <style><%@include file="resources/js-ui/ds/css/sleep-and-reactivation-ds-component.css"%></style> -->
