@@ -16,6 +16,14 @@ err() {
     echo -e "${RED}[✘] $1${NC}"
 }
 
+# True if all given apt packages are installed (Ubuntu 24.04+ renamed
+# some of them with a t64 suffix, e.g. libasound2 -> libasound2t64)
+pkgs_installed() {
+    for p in "$@"; do
+        dpkg-query -W -f='${Status}' "$p" "${p}t64" 2>/dev/null | grep -q "install ok installed" || return 1
+    done
+}
+
 # --- STEP 1: CLEANUP AND DEPENDENCY INSTALLATION ---
 
 log "Ensuring that previous environment is stopped..."
@@ -26,8 +34,12 @@ else
 fi
 
 log "Updating APT and installing required system packages..."
-sudo apt update
-sudo apt install -y python3-venv docker.io docker-compose
+if pkgs_installed python3-venv docker.io docker-compose; then
+    log "System packages already installed, skipping apt"
+else
+    sudo apt update
+    sudo apt install -y python3-venv docker.io docker-compose
+fi
 
 log "Ensuring (again) that previous environment is stopped..."
 if [ -f "kill_docker.sh" ]; then
@@ -82,10 +94,18 @@ if [ -f "$VENV_PLAYWRIGHT" ]; then
     log "Installing Playwright browsers and dependencies..."
 
     # 1. Install browser binaries
-    $VENV_PLAYWRIGHT install
+    $VENV_PLAYWRIGHT install chromium
 
     # 2. Install system-level dependencies (requires sudo)
-    sudo $VENV_PLAYWRIGHT install-deps
+    # install-deps runs apt-get update every time; skip it if it already
+    # succeeded for this Playwright version
+    PW_VERSION=$($VENV_PLAYWRIGHT --version)
+    if [ "$(cat .playwright_deps 2>/dev/null)" = "$PW_VERSION" ]; then
+        log "Playwright system dependencies already installed for $PW_VERSION, skipping"
+    else
+        sudo $VENV_PLAYWRIGHT install-deps chromium
+        echo "$PW_VERSION" > .playwright_deps
+    fi
 else
     log "Playwright executable not found in venv. Skipping browser setup."
 fi
@@ -110,3 +130,8 @@ else
 fi
 
 log "System Ready. Restart Complete."
+
+# --- STEP 5: PLC DATA COLLECTOR ---
+
+log "Installing PLC data collector service (plc-collector)..."
+sudo bash ../all-systems-collector/install_service.sh

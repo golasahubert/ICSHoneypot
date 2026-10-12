@@ -18,4 +18,6 @@ fi
 
 echo "[✓] Cleanup complete."
 
-sudo docker system prune -f
+# Only remove stopped containers; "docker system prune" also deleted the
+# Docker build cache, so every build recompiled OpenPLC from scratch.
+sudo docker container prune -f

@@ -18,7 +18,7 @@ pip install --upgrade pip
 pip install playwright
 
 # Step 4: Install Playwright browsers
-playwright install
+playwright install chromium
 
 # # Step 5: Run the Python automation script
 # echo "[+] Running SCADA-BR login script..."

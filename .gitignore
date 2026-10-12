@@ -11,3 +11,5 @@ all-systems-collector/__pycache__
 all-systems-collector/logs
 **/logs/
 all-systems-collector/venv
+**/.playwright_deps
+all-systems-collector/.venv

@@ -53,7 +53,7 @@ The script writes to the folder configured in `output.dir`, for example:
 
 ## 5) Run continuously as a systemd service (recommended)
 
-With `mode: "continuous"` in `config.yaml`, install the collector as a service:
+With `mode: "continuous"` in `config.yaml`, the collector runs as a service. Every `build_system.sh` (variants 1–6) installs it automatically as its last step; to install or update it by hand:
 
 ```bash
 sudo bash install_service.sh
