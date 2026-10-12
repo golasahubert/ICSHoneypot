@@ -61,7 +61,22 @@ systemctl status plc-collector
 journalctl -u plc-collector -f
 ```
 
-The service restarts automatically if the collector crashes and starts again after a reboot. In continuous mode a new CSV file is started every day at local midnight (`<dir>/MM/DD/collector_data_YYYYMMDD_HHMMSS.csv`).
+On server 5 (`5.NewScada`) PLC2 is published on port `3502` instead of `502`, so use the dedicated config:
+
+```bash
+sudo bash install_service.sh 5.config.yaml
+```
+
+The service restarts automatically if the collector crashes and starts again after a reboot. In continuous mode a new CSV file is started every `output.rotate_hours` (default 6h), aligned to local time, so each day has 4 files:
+
+```
+/var/log/plc_collector/10/12/collector_data_20261012_000000.csv   # 00:00-06:00
+/var/log/plc_collector/10/12/collector_data_20261012_060000.csv   # 06:00-12:00
+/var/log/plc_collector/10/12/collector_data_20261012_120000.csv   # 12:00-18:00
+/var/log/plc_collector/10/12/collector_data_20261012_180000.csv   # 18:00-24:00
+```
+
+If the service restarts mid-slot, it appends to that slot's file.
 
 If you previously used a cron entry (`0 */6 * * * ...`), remove it with `crontab -e`, otherwise cron and the service will compete for the PID lock.
 

@@ -12,11 +12,11 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
   - Operational changes (restart policy, firewall, resource limits, capture/collector fixes) are safe at any time.
 - Data collected on each server:
   - pcap: `data-collection/capture.sh` (tcpdump on `ens3`, systemd `capture.service`), pulled by `log-collector.sh` via rsync.
-  - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (install with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, rotated daily.
+  - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (install with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
 
 ## Per-variant differences to remember
 
-- PLC2 Modbus is exposed on host port `502` in all variants **except 5.NewScada, where it is `3502`**. The collector `config.yaml` must be adjusted on server 5.
+- PLC2 Modbus is exposed on host port `502` in all variants **except 5.NewScada, where it is `3502`**. On server 5 install the collector with `sudo bash all-systems-collector/install_service.sh 5.config.yaml`.
 - Host ports: PLC1 `2502`, PLC3 `4502`, OpenPLC web `28080/38080/48080` (login `openplc/openplc`).
 - SCADA users (variants 2–6): `admin/admin`, `user/user123`.
 
@@ -25,6 +25,7 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
 - PLC, simulator and automation code is **duplicated identically** in every variant folder. A fix to `physics_sim.py`, `plc_*/main.py`, `comm_modbus.py`, `*.st` etc. must be applied to all 6 folders (verify with `md5sum */<path>`).
 - `build_system.sh` wipes all containers (`kill_docker.sh`), rebuilds and runs Playwright automation (OpenPLC "Save changes", SCADA import). On a running server, use `docker-compose up -d` for compose-only changes instead of a full rebuild.
 - All services use `restart: unless-stopped` (`scadalts` in 4 and 6: `always`).
+- Every change made to the repo must also be described in English in `UPDATE.md` (newest entries on top).
 
 ## Known open issues (not yet fixed)
 

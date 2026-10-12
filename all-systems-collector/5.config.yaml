@@ -1,0 +1,97 @@
+# ============================================================================
+# CONFIG FOR SERVER 5 (5.NewScada)
+# ============================================================================
+# Same as config.yaml, except PLC2 Modbus is published on host port 3502
+# (not 502) in 5.NewScada/docker-compose.yml.
+# Install with: sudo bash install_service.sh 5.config.yaml
+# ============================================================================
+
+# ============================================================================
+# FINAL PLC DATA COLLECTOR - Configuration Example
+# ============================================================================
+# 
+# This configuration file controls:
+# - How the collector runs (continuous or for X seconds)
+# - Poll interval (how often to read PLC data)
+# - PLC addresses and ports
+# - Which fields to read from each PLC
+# - CSV output settings
+# - Output fields (customize which data gets saved to file)
+#
+# ============================================================================
+
+# ============================================================================
+# FINAL PLC DATA COLLECTOR - Configuration
+# ============================================================================
+#
+# This configuration file controls:
+# - how the collector runs (continuous or for X seconds)
+# - poll interval
+# - PLC addresses and ports
+# - which fields to read from each PLC
+# - where to save output files and logs
+#
+# NOTE:
+#   - output.dir can be relative (./logs) or absolute (/var/lib/plc-collector)
+#   - you can change it here without editing the Python code
+# ============================================================================
+
+runtime:
+  mode: "continuous"            # "continuous", "duration" or "24h" (continuous = run as systemd service)
+  duration_seconds: 21600     # 6h
+
+polling:
+  interval_ms: 1000             # read PLC every 1000 ms (1Hz)
+
+output:
+  dir: "/var/log/plc_collector"                # wybór miejsca zapisu: ./logs albo np. /var/lib/plc-collector
+  ack_url: ""                  # optional webhook URL
+  rotate_hours: 6               # new CSV every 6h: 4 files/day (00,06,12,18), must divide 24
+
+output_fields:
+  include_timestamp: true
+  include_duration: false
+  include_data: true
+
+plcs:
+  - name: "PLC1 (T-201 Control)"
+    host: "127.0.0.1"
+    port: 2502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+      - name: "pump_status"
+        type: "coil"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+
+  - name: "PLC2 (T-202 Monitor)"
+    host: "127.0.0.1"
+    port: 3502                  # 5.NewScada: PLC2 published as 3502:502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0
+
+  - name: "PLC3 (T-203 Control)"
+    host: "127.0.0.1"
+    port: 4502
+    unit_id: 1
+    points:
+      - name: "water_level"
+        type: "input"
+        address: 0
+        count: 1
+        datatype: "uint16"
+        scale: 1.0

@@ -274,10 +274,15 @@ def read_modbus_point(
 
 def collect_snapshot(
     plcs_config: List[Dict[str, Any]],
-    start_time: float
+    start_time: float,
+    clients: Dict[str, ModbusTcpClient]
 ) -> Dict[str, Any]:
     """
     Poll all configured PLCs once and collect a snapshot.
+    
+    Connections are kept open between polls (one TCP connection per PLC, like
+    a real SCADA poller) instead of reconnecting every second. A client is
+    closed after a failed read so the next poll reconnects.
     
     Creates a snapshot containing:
       - timestamp: ISO 8601 UTC
@@ -287,6 +292,7 @@ def collect_snapshot(
     Args:
         plcs_config: List of PLC configuration dicts.
         start_time: time.time() when polling started (for duration calc).
+        clients: Persistent clients keyed by "host:port", reused across polls.
     
     Returns:
         Snapshot dict with collected data.
@@ -307,13 +313,22 @@ def collect_snapshot(
         unit_id = int(plc_config.get('unit_id', 1))
         points = plc_config.get('points', [])
         
-        # Create and connect client
-        client = create_modbus_client(host, port)
+        # Reuse the persistent client, (re)connecting only when needed
+        key = f"{host}:{port}"
+        client = clients.get(key)
+        if client is None:
+            client = create_modbus_client(host, port)
+            clients[key] = client
         plc_data = {}
-        connection_ok = False
+        read_failed = False
         
         try:
-            connection_ok = connect_plc(client, plc_name, host, port)
+            if client.is_socket_open():
+                connection_ok = True
+            else:
+                connection_ok = connect_plc(client, plc_name, host, port)
+                if connection_ok:
+                    logger.info(f"Connected to {plc_name} ({host}:{port})")
             
             if not connection_ok:
                 logger.warning(f"Skipping points for {plc_name} (connection failed)")
@@ -329,14 +344,18 @@ def collect_snapshot(
                     except Exception as e:
                         logger.error(f"Error reading {plc_name}.{point_name}: {e}")
                         plc_data[point_name] = None
+                    if plc_data[point_name] is None:
+                        read_failed = True
                 
                 plc_data['_status'] = 'connected'
         
         except Exception as e:
             logger.error(f"Unexpected error polling {plc_name}: {e}")
             plc_data['_status'] = 'error'
+            read_failed = True
         
-        finally:
+        # Drop a possibly broken connection; the next poll reconnects
+        if read_failed:
             close_plc(client)
         
         # Add PLC data to snapshot
@@ -403,7 +422,7 @@ def write_snapshot_csv(
         if not file_exists:
             writer.writeheader()
         writer.writerow(row)
-    logger.info(f"Appended snapshot to {output_path}")
+    logger.debug(f"Appended snapshot to {output_path}")
 
 
 def send_ack_webhook(snapshot: Dict[str, Any], ack_url: str, timeout: int = 10):
@@ -461,6 +480,10 @@ def run_collector(config: Dict[str, Any]):
     output_config = config.get('output', {})
     output_dir = output_config.get('dir', './logs')
     ack_url = output_config.get('ack_url', '')
+    rotate_hours = int(output_config.get('rotate_hours', 6))
+    if rotate_hours <= 0 or 24 % rotate_hours != 0:
+        logger.warning(f"output.rotate_hours={rotate_hours} does not divide 24, using 6")
+        rotate_hours = 6
     
     output_fields_config = config.get('output_fields', {})
     include_timestamp = output_fields_config.get('include_timestamp', True)
@@ -556,19 +579,24 @@ def run_collector(config: Dict[str, Any]):
         logger.info(f"Duration limit: {max_duration} seconds")
     logger.info(f"Poll interval: {poll_interval_ms} ms ({1000/poll_interval_ms:.1f} Hz)")
     logger.info(f"Output directory: {output_path.resolve()}")
+    logger.info(f"New CSV file every {rotate_hours}h ({24 // rotate_hours} files per day)")
     logger.info(f"Number of PLCs: {len(plcs)}")
     
     start_time = time.time()
 
-    def new_csv_file(moment: datetime) -> Path:
-        return output_path / moment.strftime('%m') / moment.strftime('%d') / \
-            f"collector_data_{moment.strftime('%Y%m%d_%H%M%S')}.csv"
+    def slot_start(moment: datetime) -> datetime:
+        return moment.replace(hour=moment.hour - moment.hour % rotate_hours,
+                              minute=0, second=0, microsecond=0)
 
-    # A new CSV file is started at each local midnight, so a continuous run
-    # produces one file per day instead of a single ever-growing file
-    run_start_local = datetime.now().astimezone()
-    csv_date = run_start_local.date()
-    csv_file = new_csv_file(run_start_local)
+    def new_csv_file(slot: datetime) -> Path:
+        return output_path / slot.strftime('%m') / slot.strftime('%d') / \
+            f"collector_data_{slot.strftime('%Y%m%d_%H%M%S')}.csv"
+
+    # Files are aligned to fixed local-time slots (00-06, 06-12, 12-18, 18-24
+    # for 6h), named after the slot start. A restart within a slot appends to
+    # the same file, so each day always has exactly 24 / rotate_hours files.
+    csv_slot = slot_start(datetime.now().astimezone())
+    csv_file = new_csv_file(csv_slot)
     csv_fieldnames_list = csv_fieldnames(
         plcs,
         include_timestamp,
@@ -577,6 +605,7 @@ def run_collector(config: Dict[str, Any]):
     )
     logger.info(f"CSV run file: {csv_file}")
     snapshot_count = 0
+    clients: Dict[str, ModbusTcpClient] = {}
     
     try:
         while True:
@@ -587,15 +616,15 @@ def run_collector(config: Dict[str, Any]):
                     logger.info(f"Duration limit reached ({elapsed:.1f}s), stopping collector")
                     break
             
-            now_local = datetime.now().astimezone()
-            if now_local.date() != csv_date:
-                csv_date = now_local.date()
-                csv_file = new_csv_file(now_local)
+            now_slot = slot_start(datetime.now().astimezone())
+            if now_slot != csv_slot:
+                csv_slot = now_slot
+                csv_file = new_csv_file(csv_slot)
                 logger.info(f"CSV run file: {csv_file}")
 
             # Collect snapshot
             try:
-                snapshot = collect_snapshot(plcs, start_time)
+                snapshot = collect_snapshot(plcs, start_time, clients)
                 
                 # Filter output fields based on config
                 output_snapshot = {}
@@ -632,6 +661,8 @@ def run_collector(config: Dict[str, Any]):
         raise
     
     finally:
+        for client in clients.values():
+            close_plc(client)
         elapsed = time.time() - start_time
         logger.info(f"Collector finished. Collected {snapshot_count} snapshots in {elapsed:.1f}s")
 
