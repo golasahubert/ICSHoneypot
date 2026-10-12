@@ -4,6 +4,12 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-12
 
+### automation: Playwright version aligned in variants 5 and 6
+
+- `5.NewScada` and `6.ScadaLTS-no-buttons` pinned `playwright==1.44.0` in `automation/requirements.txt`; variants 1–4 already used `playwright>=1.48`. All six now use `playwright>=1.48`.
+- Playwright 1.44 does not recognise Ubuntu 24.04, so `playwright install-deps` fell back to an old package list (`libasound2`, `libicu70`, `libffi7`, `libx264-163`) and failed with apt exit code 100.
+- Host-side automation only; nothing changes from an attacker's point of view.
+
 ### automation: setup_import.sh works on Ubuntu 20.04 and 24.04
 
 - In `*/automation/setup_import.sh` (variants 2–6) the ALSA library for Playwright is now picked automatically: `libasound2t64` if apt knows it (Ubuntu 24.04+), otherwise `libasound2` (Ubuntu 20.04/22.04). Before this, `apt install libasound2` failed on 24.04 because it is only a virtual package there.
