@@ -509,6 +509,11 @@ def run_collector(config: Dict[str, Any]):
                 existing_pid = int(pid_file.read_text().strip())
                 # Check if process exists (will raise ProcessLookupError if not)
                 os.kill(existing_pid, 0)
+                # After a reboot the PID may belong to an unrelated process;
+                # only treat it as a running collector if the cmdline matches
+                cmdline = Path(f'/proc/{existing_pid}/cmdline').read_bytes()
+                if b'final_collector' not in cmdline:
+                    raise ProcessLookupError
                 logger.error(f"Another collector process (PID {existing_pid}) appears to be running. Exiting.")
                 return
             except ProcessLookupError:
@@ -517,8 +522,8 @@ def run_collector(config: Dict[str, Any]):
                     pid_file.unlink()
                 except Exception:
                     pass
-            except ValueError:
-                # Unreadable PID, remove and continue
+            except (ValueError, FileNotFoundError):
+                # Unreadable PID (or process vanished meanwhile), remove and continue
                 try:
                     pid_file.unlink()
                 except Exception:
@@ -554,11 +559,16 @@ def run_collector(config: Dict[str, Any]):
     logger.info(f"Number of PLCs: {len(plcs)}")
     
     start_time = time.time()
+
+    def new_csv_file(moment: datetime) -> Path:
+        return output_path / moment.strftime('%m') / moment.strftime('%d') / \
+            f"collector_data_{moment.strftime('%Y%m%d_%H%M%S')}.csv"
+
+    # A new CSV file is started at each local midnight, so a continuous run
+    # produces one file per day instead of a single ever-growing file
     run_start_local = datetime.now().astimezone()
-    run_month = run_start_local.strftime('%m')
-    run_day = run_start_local.strftime('%d')
-    run_timestamp = run_start_local.strftime('%Y%m%d_%H%M%S')
-    csv_file = output_path / run_month / run_day / f'collector_data_{run_timestamp}.csv'
+    csv_date = run_start_local.date()
+    csv_file = new_csv_file(run_start_local)
     csv_fieldnames_list = csv_fieldnames(
         plcs,
         include_timestamp,
@@ -577,6 +587,12 @@ def run_collector(config: Dict[str, Any]):
                     logger.info(f"Duration limit reached ({elapsed:.1f}s), stopping collector")
                     break
             
+            now_local = datetime.now().astimezone()
+            if now_local.date() != csv_date:
+                csv_date = now_local.date()
+                csv_file = new_csv_file(now_local)
+                logger.info(f"CSV run file: {csv_file}")
+
             # Collect snapshot
             try:
                 snapshot = collect_snapshot(plcs, start_time)

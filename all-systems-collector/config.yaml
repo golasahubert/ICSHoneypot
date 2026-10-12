@@ -29,7 +29,7 @@
 # ============================================================================
 
 runtime:
-  mode: "duration"              # "continuous", "duration" or "24h"
+  mode: "continuous"            # "continuous", "duration" or "24h" (continuous = run as systemd service)
   duration_seconds: 21600     # 6h
 
 polling:

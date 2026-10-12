@@ -16,8 +16,8 @@ Open `config.yaml` and set:
 
 ```yaml
 runtime:
-  mode: "duration"         # "continuous", "duration" or "24h"
-  duration_seconds: 21600   # 6h run
+  mode: "continuous"       # "continuous", "duration" or "24h"
+  duration_seconds: 21600   # used only in "duration" mode
 
 polling:
   interval_ms: 1000
@@ -28,7 +28,7 @@ output:
   ack_url: ""
 ```
 
-For a 6h run every 6h, keep `mode: "duration"` and `duration_seconds: 21600`.
+For a single 6h run use `mode: "duration"` and `duration_seconds: 21600`.
 For 24/7 keep `mode: "continuous"`.
 
 ## 3) Run the collector
@@ -51,13 +51,19 @@ The script writes to the folder configured in `output.dir`, for example:
 - `./logs/collector.log`
 - `./logs/collector.pid`
 
-## 5) Run every 6h safely
+## 5) Run continuously as a systemd service (recommended)
 
-Use a scheduler like cron or systemd timer:
+With `mode: "continuous"` in `config.yaml`, install the collector as a service:
 
 ```bash
-0 */6 * * * cd /path/to/folder && python final_collector.py --config config.yaml
+sudo bash install_service.sh
+systemctl status plc-collector
+journalctl -u plc-collector -f
 ```
+
+The service restarts automatically if the collector crashes and starts again after a reboot. In continuous mode a new CSV file is started every day at local midnight (`<dir>/MM/DD/collector_data_YYYYMMDD_HHMMSS.csv`).
+
+If you previously used a cron entry (`0 */6 * * * ...`), remove it with `crontab -e`, otherwise cron and the service will compete for the PID lock.
 
 The script includes a PID lock so a second copy does not start while one is already running. It also writes a rotating log file and keeps going even if one poll fails.
 
