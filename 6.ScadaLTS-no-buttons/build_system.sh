@@ -19,46 +19,6 @@ else
   sudo apt install -y python3-venv docker.io docker-compose
 fi
 
-# Playwright is installed before the containers are started: on a 1 GB RAM
-# VPS, unpacking Chromium and installing its apt dependencies next to the
-# running stack (Scada-LTS, MySQL, 3x OpenPLC) exhausted memory and froze it.
-echo "[+] Setting up Python virtual environment..."
-cd automation
-
-if [ ! -d "venv" ]; then
-  echo "[+] Creating virtual environment..."
-  python3 -m venv venv || { echo "[X] Failed to create virtual environment."; exit 1; }
-fi
-
-# Fix ownership left by earlier runs of setup_import.sh under sudo
-sudo chown -R "$(whoami)":"$(whoami)" venv
-[ -e .playwright_deps ] && sudo chown "$(whoami)":"$(whoami)" .playwright_deps
-
-echo "[+] Activating virtual environment..."
-source venv/bin/activate
-
-if [ -f "requirements.txt" ]; then
-  echo "[+] Installing Python dependencies..."
-  pip install --upgrade pip
-  pip install -r requirements.txt
-fi
-
-# Only Chromium is used by the login scripts
-echo "[+] Installing Playwright Chromium..."
-playwright install chromium
-# install-deps runs apt-get update every time; skip it if it already
-# succeeded for this Playwright version
-PW_VERSION=$(playwright --version)
-if [ "$(cat .playwright_deps 2>/dev/null)" = "$PW_VERSION" ]; then
-  echo "[=] Playwright system dependencies already installed for $PW_VERSION, skipping"
-else
-  sudo "$(pwd)/venv/bin/playwright" install-deps chromium
-  echo "$PW_VERSION" > .playwright_deps
-fi
-
-deactivate
-cd ..
-
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
 
@@ -83,9 +43,35 @@ sudo docker-compose up -d --build
 echo "[+] Waiting for containers to initialize..."
 sleep 5
 
+# The collector is installed before Playwright/Chromium, so data collection
+# starts as soon as the PLCs are up (it reconnects by itself during the
+# restart below). Server 6 does not publish PLC2 Modbus on the host, hence
+# 6.config.yaml (PLC2 read from its container IP).
+echo "[+] Installing PLC data collector service (plc-collector)..."
+sudo bash ../all-systems-collector/install_service.sh 6.config.yaml
+
+echo "[+] Setting up Python virtual environment..."
+cd automation
+
+if [ ! -d "venv" ]; then
+  echo "[+] Creating virtual environment..."
+  python3 -m venv venv || { echo "[X] Failed to create virtual environment."; exit 1; }
+fi
+
+echo "[+] Activating virtual environment..."
+source venv/bin/activate
+
+if [ -f "requirements.txt" ]; then
+  echo "[+] Installing Python dependencies..."
+  pip install --upgrade pip
+  pip install -r requirements.txt
+fi
+
 echo "[+] Running setup_import.sh..."
-# Not under sudo: Chromium is in the current user's ~/.cache/ms-playwright
-bash automation/setup_import.sh
+sudo bash setup_import.sh
+
+deactivate
+cd ..
 
 echo "[OK] Build and setup complete."
 
@@ -94,7 +80,3 @@ sudo bash stop_system.sh
 sudo bash start_system.sh
 
 echo "[OK] Restarting Complete."
-
-echo "[+] Installing PLC data collector service (plc-collector)..."
-# Server 6 does not publish PLC2 Modbus on the host, hence 6.config.yaml
-sudo bash ../all-systems-collector/install_service.sh 6.config.yaml

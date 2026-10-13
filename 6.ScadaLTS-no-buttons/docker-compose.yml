@@ -31,7 +31,7 @@ services:
     container_name: lts_scadalts
     image: scadalts/scadalts:v2.7.4
     environment:
-      - CATALINA_OPTS=-Xmx2G -Xms512m
+      - CATALINA_OPTS=-Xmx512m -Xms512m  # 6: 512 MB heap (2G in 4/5), server has 1 GB RAM
       - SCADALTS_DB_HOST=database
       - SCADALTS_DB_PORT=3306
       - SCADALTS_DB_NAME=scadalts

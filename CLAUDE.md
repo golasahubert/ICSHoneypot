@@ -12,12 +12,12 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
   - Operational changes (restart policy, firewall, resource limits, capture/collector fixes) are safe at any time.
 - Data collected on each server:
   - pcap: `data-collection/capture.sh` (tcpdump on `ens3`, systemd `capture.service`), pulled by `log-collector.sh` via rsync.
-  - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (installed automatically at the end of every `build_system.sh`, or by hand with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
+  - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (installed automatically by every `build_system.sh`: at the end in 1–5, right after `docker-compose up` in 6; or by hand with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
 
 ## Per-variant differences to remember
 
 - `5.NewScada` is a copy of `4.ScadaLTSv2.7.4` (stock ScadaLTS v2.7.4, same import, MySQL and nginx) with one exposed difference: PLC2 Modbus on host port `3502`. Keep 4 and 5 in sync (`diff -r 4.ScadaLTSv2.7.4 5.NewScada` should only show the PLC2 port and the collector config in `build_system.sh`).
-- `6.ScadaLTS-no-buttons` is the same as 5 with two differences: PLC2 Modbus is **not published** on the host at all, and `automation/dataHMI.txt` is the one from 3 (no buttons, users `admin` and `user`). `diff -r 5.NewScada 6.ScadaLTS-no-buttons` should only show those, plus the collector config.
+- `6.ScadaLTS-no-buttons` is the same as 5 with two differences: PLC2 Modbus is **not published** on the host at all, and `automation/dataHMI.txt` is the one from 3 (no buttons, users `admin` and `user`). `diff -r 5.NewScada 6.ScadaLTS-no-buttons` should only show those, plus the collector config/step in `build_system.sh` and the Scada-LTS heap (`-Xmx512m` in 6, server has 1 GB RAM).
 - PLC2 Modbus is exposed on host port `502` in variants 1–4, on `3502` in 5, and not at all in 6. Collector configs: `config.yaml` (1–4), `5.config.yaml` (5), and `6.config.yaml` (6, which reads PLC2 from its container IP `172.25.0.4:502`). Each `build_system.sh` passes the right config; by hand: `sudo bash all-systems-collector/install_service.sh <config>`.
 - Host ports: PLC1 `2502`, PLC3 `4502`, OpenPLC web `28080/38080/48080` (login `openplc/openplc`).
 - HMI: nginx on port `80` (redirects to the HMI) in variants 2–6; ScadaLTS directly on `8080` in 4–6.

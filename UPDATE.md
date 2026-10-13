@@ -4,6 +4,18 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-13
 
+### 6.ScadaLTS-no-buttons: Scada-LTS heap limited to 512 MB
+
+- `docker-compose.yml`: `CATALINA_OPTS=-Xmx512m -Xms512m` (was `-Xmx2G -Xms512m`, still the value in 4 and 5). Server 6 has 1 GB RAM, and a 2 GB heap next to MySQL and 3x OpenPLC can push the machine into swap, which keeps the CPU at 100%.
+- Operational only (resource limit, not visible to attackers). If Scada-LTS restarts or is slow, check `tomcat_log/` for `OutOfMemoryError`.
+
+### 6.ScadaLTS-no-buttons: build script back to the one from 4, collector before Playwright
+
+- Reverts the previous entry ("Playwright installed before the containers"). `build_system.sh` and `automation/setup_import.sh` are again copied from `4.ScadaLTSv2.7.4`: containers start first, Playwright/Chromium are installed afterwards by `setup_import.sh` (under `sudo`, as in 4).
+- One difference from 4: the `plc-collector` service is installed right after `docker-compose up` (before Playwright/Chromium and the SCADA import), not at the end. Data collection starts as soon as the PLCs are up. The collector reconnects by itself during the `stop_system.sh`/`start_system.sh` restart at the end.
+- The collector still uses `6.config.yaml`. PLC2 Modbus is not published on the host in variant 6, so `config.yaml` (PLC2 on `127.0.0.1:502`) would collect nothing from PLC2.
+- Operational only (not visible to attackers). `diff -r 4.ScadaLTSv2.7.4 6.ScadaLTS-no-buttons` now shows only `dataHMI.txt`, the PLC2 port in `docker-compose.yml` and the collector step in `build_system.sh`.
+
 ### 6.ScadaLTS-no-buttons: Playwright installed before the containers
 
 - On a fresh Ubuntu 20.04 VPS (1 core, 1 GB RAM, 15 GB disk) `build_system.sh` froze the machine during the Playwright install and it needed a reboot. Chromium and its apt dependencies were installed while the whole stack (Scada-LTS, MySQL, 3x OpenPLC) was already running, and the server ran out of memory.
