@@ -4,6 +4,12 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-13
 
+### 6.ScadaLTS-no-buttons: 2 GB swap created by build_system.sh
+
+- Server 6 (1 GB RAM, no swap) froze twice during `build_system.sh`, while creating the venvs right after `docker-compose up` (Scada-LTS, MySQL and 3x OpenPLC starting at the same time). SSH stopped answering (`Connection timed out during banner exchange`) and the server needed a reboot.
+- `build_system.sh` now checks for swap before stopping the old environment. If no swap is active, it creates a 2 GB `/swapfile` (`fallocate`, falling back to `dd`), enables it and adds it to `/etc/fstab`. If swap is already active, the step does nothing.
+- Operational only (not visible to attackers). `diff -r 5.NewScada 6.ScadaLTS-no-buttons` now also shows this step.
+
 ### 6.ScadaLTS-no-buttons: Scada-LTS heap limited to 512 MB
 
 - `docker-compose.yml`: `CATALINA_OPTS=-Xmx512m -Xms512m` (was `-Xmx2G -Xms512m`, still the value in 4 and 5). Server 6 has 1 GB RAM, and a 2 GB heap next to MySQL and 3x OpenPLC can push the machine into swap, which keeps the CPU at 100%.

@@ -19,6 +19,22 @@ else
   sudo apt install -y python3-venv docker.io docker-compose
 fi
 
+# Server 6 has 1 GB RAM: without swap the machine freezes while the venvs and
+# Chromium are installed next to the starting stack. Only added if no swap is active.
+echo "[+] Ensuring swap is enabled..."
+if [ -z "$(swapon --show --noheadings)" ]; then
+  if [ ! -f /swapfile ]; then
+    echo "[+] Creating 2 GB /swapfile..."
+    sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+  fi
+  sudo swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null
+else
+  echo "[=] Swap already active, skipping"
+fi
+
 echo "[+] Ensuring that previous environment is stopped..."
 sudo bash kill_docker.sh
 
