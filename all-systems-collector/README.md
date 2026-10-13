@@ -67,6 +67,12 @@ On server 5 (`5.NewScada`) PLC2 is published on port `3502` instead of `502`, so
 sudo bash install_service.sh 5.config.yaml
 ```
 
+On server 6 (`6.ScadaLTS-no-buttons`) PLC2 Modbus is not published on the host, so `6.config.yaml` reads it from the container IP `172.25.0.4:502`:
+
+```bash
+sudo bash install_service.sh 6.config.yaml
+```
+
 The service restarts automatically if the collector crashes and starts again after a reboot. In continuous mode a new CSV file is started every `output.rotate_hours` (default 6h), aligned to local time, so each day has 4 files:
 
 ```

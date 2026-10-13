@@ -4,6 +4,22 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-12
 
+### 6.ScadaLTS-no-buttons: same as 5, PLC2 Modbus hidden
+
+- `docker-compose.yml`, `build_system.sh` and `automation/` (except `dataHMI.txt`) are copied from `5.NewScada`. That brings the MySQL healthcheck, and the wipe of the `db_storage` volume on every build, so the import always starts from an empty DB.
+- **PLC2 Modbus is not published on the host** (no `502`/`3502` mapping). PLC2's OpenPLC web (`38080`) and `39090` stay published. ScadaLTS still reads PLC2 over the internal Docker network.
+- `automation/dataHMI.txt` stays the one from `3.scadaBR-without-buttons` (no script buttons, users `admin` and `user`). It was already identical.
+- New collector config `all-systems-collector/6.config.yaml`. It reads PLC2 from its container IP `172.25.0.4:502`, which the host can reach directly (checked on the test server). `6.ScadaLTS-no-buttons/build_system.sh` installs the collector with it.
+- **Visible to attackers** (PLC2 port closed): deploy on server 6 between measurement periods.
+- Verified on the test server after a full build:
+  - PLC2 Modbus is closed on all host addresses.
+  - The HMI works via `http://<ip>/` and `:8080`.
+  - The import created `DATA PLC1/2/3`, `HMI SYSTEM`, the scripts and point links. Its only event handler (`test script high`) was not imported.
+  - Logins work with `admin/admin` and `user/user`.
+  - ScadaLTS is connected to all 3 PLCs.
+  - The collector reads PLC2 via `172.25.0.4:502`.
+- `CLAUDE.md`: SCADA users corrected. The second account is `user/user` (only in 3 and 6), not `user/user123`.
+
 ### 5.NewScada: same ScadaLTS as variant 4
 
 - The custom ScadaLTS setup in variant 5 is replaced by a copy of `4.ScadaLTSv2.7.4`. The custom setup had JSP/tag overrides, a custom startup script, a MySQL init dump from a newer ScadaLTS and the `superadmin` import account.

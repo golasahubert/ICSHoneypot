@@ -17,10 +17,11 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
 ## Per-variant differences to remember
 
 - `5.NewScada` is a copy of `4.ScadaLTSv2.7.4` (stock ScadaLTS v2.7.4, same import, MySQL and nginx) with one exposed difference: PLC2 Modbus on host port `3502`. Keep 4 and 5 in sync (`diff -r 4.ScadaLTSv2.7.4 5.NewScada` should only show the PLC2 port and the collector config in `build_system.sh`).
-- PLC2 Modbus is exposed on host port `502` in all variants **except 5.NewScada, where it is `3502`**. On server 5 the collector uses `5.config.yaml` (`5.NewScada/build_system.sh` passes it; by hand: `sudo bash all-systems-collector/install_service.sh 5.config.yaml`).
+- `6.ScadaLTS-no-buttons` is the same as 5 with two differences: PLC2 Modbus is **not published** on the host at all, and `automation/dataHMI.txt` is the one from 3 (no buttons, users `admin` and `user`). `diff -r 5.NewScada 6.ScadaLTS-no-buttons` should only show those, plus the collector config.
+- PLC2 Modbus is exposed on host port `502` in variants 1–4, on `3502` in 5, and not at all in 6. Collector configs: `config.yaml` (1–4), `5.config.yaml` (5), and `6.config.yaml` (6, which reads PLC2 from its container IP `172.25.0.4:502`). Each `build_system.sh` passes the right config; by hand: `sudo bash all-systems-collector/install_service.sh <config>`.
 - Host ports: PLC1 `2502`, PLC3 `4502`, OpenPLC web `28080/38080/48080` (login `openplc/openplc`).
 - HMI: nginx on port `80` (redirects to the HMI) in variants 2–6; ScadaLTS directly on `8080` in 4–6.
-- SCADA users (variants 2–6): `admin/admin`; `user/user123` too, except in 4 and 5, where `automation/dataHMI.txt` only creates `admin` (checked on the test server, 2026-10-12).
+- SCADA users (from `automation/dataHMI.txt`): `admin/admin` in 2–6; additionally `user/user` in 3 and 6 (checked on the test server for 5 and 6, 2026-10-13).
 
 ## Code layout / conventions
 
