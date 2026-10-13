@@ -2,6 +2,17 @@
 
 Changelog of changes to the project. Newest entries on top.
 
+## 2026-10-13
+
+### 6.ScadaLTS-no-buttons: Playwright installed before the containers
+
+- On a fresh Ubuntu 20.04 VPS (1 core, 1 GB RAM, 15 GB disk) `build_system.sh` froze the machine during the Playwright install and it needed a reboot. Chromium and its apt dependencies were installed while the whole stack (Scada-LTS, MySQL, 3x OpenPLC) was already running, and the server ran out of memory.
+- `build_system.sh` now installs the venv, `requirements.txt`, Chromium and `install-deps chromium` **before** `docker-compose up`. The containers start only after that.
+- `automation/setup_import.sh` only runs `login_scada.py` and `login_openplc.py` with the venv Python. The second `pip install playwright`, the manual `apt install` of browser libraries and the duplicated script header are removed.
+- `setup_import.sh` is no longer run with `sudo`, so it uses the same Chromium in the user's `~/.cache/ms-playwright` (no second copy in `/root/.cache`). `build_system.sh` fixes the ownership of `venv` and `.playwright_deps` left by earlier root runs.
+- Operational only (not visible to attackers). Variant 5 still has the old order, so `diff -r 5.NewScada 6.ScadaLTS-no-buttons` now also shows these two files.
+- Not yet tested on a server. On a 1 GB RAM machine add swap as well (e.g. a 2 GB `/swapfile`).
+
 ## 2026-10-12
 
 ### 6.ScadaLTS-no-buttons: same as 5, PLC2 Modbus hidden
