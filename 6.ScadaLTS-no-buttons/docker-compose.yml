@@ -15,7 +15,7 @@ services:
     command: --sql_mode="NO_ENGINE_SUBSTITUTION"
     volumes:
       - db_storage:/var/lib/mysql
-    # Healthcheck sprawdza, czy baza faktycznie przyjmuje połączenia
+    # Healthcheck: checks that the database actually accepts connections
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "scadalts", "-pscadalts"]
       timeout: 5s

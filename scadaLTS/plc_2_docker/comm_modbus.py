@@ -16,7 +16,7 @@ while not stop_flag1:
         plc1.set_timeout(5.0)
         stop_flag1 = True
     except:
-        print("errore connessione plc1")
+        print("connection error: plc1")
         time.sleep(1)
 
 while not stop_flag2:
@@ -26,23 +26,23 @@ while not stop_flag2:
         plc2.set_timeout(5.0)
         stop_flag2 = True
     except:
-        print("errore connessione plc2")
+        print("connection error: plc2")
         time.sleep(1)
 
 while True:
     try:
-        #read input registers from plc2
+        #read coil 0 (request) from plc2
         inputRegisters = plc2.execute(1, cst.READ_COILS, 0, 1)
-        richiesta = inputRegisters[0]
-        print(richiesta)
+        request = inputRegisters[0]
+        print(request)
     except:
-        print("Errore in lettura coil")
+        print("error reading coil")
 
     try:
         #write request to plc1
-        plc1.execute(1, cst.WRITE_SINGLE_COIL, 2, output_value=richiesta)
+        plc1.execute(1, cst.WRITE_SINGLE_COIL, 2, output_value=request)
         plc1.execute(1, cst.READ_COILS, 2, 1)
     except:
-        print("errore scrittura")
+        print("write error")
 
     time.sleep(5)
