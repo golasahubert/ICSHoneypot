@@ -9,7 +9,8 @@
 #   - pcap: capture.service is active and the newest pcap in /var/log/tcpdump
 #     was written in the last PCAP_MAX_AGE_MIN minutes
 #   - csv:  plc-collector is active and the newest CSV in /var/log/plc_collector
-#     was written in the last CSV_MAX_AGE_MIN minutes (the collector appends every second)
+#     was written in the last CSV_MAX_AGE_MIN minutes (the collector appends every second),
+#     and no PLC is "offline" in its last row (offline = PLC containers down, honeypot not running)
 #   - disk: usage of / is below DISK_WARN_PCT
 # No sudo needed (the log directories are world-readable).
 # Exit code = number of servers with at least one FAIL.
@@ -42,6 +43,9 @@ echo "capture_service=$(systemctl is-active capture.service 2>/dev/null)"
 echo "pcap_age_min=$(newest_age /var/log/tcpdump "*.pcap")"
 echo "collector_service=$(systemctl is-active plc-collector 2>/dev/null)"
 echo "csv_age_min=$(newest_age /var/log/plc_collector "*.csv")"
+CSV=$(find /var/log/plc_collector -type f -name "*.csv" -printf "%T@ %p\n" 2>/dev/null | sort -n | tail -1 | cut -d" " -f2-)
+echo "csv_plcs=$([ -n "$CSV" ] && head -1 "$CSV" | grep -o "[.]_status" | wc -l)"
+echo "csv_offline=$([ -n "$CSV" ] && tail -1 "$CSV" | grep -o "offline" | wc -l)"
 echo "disk_pct=$(df --output=pcent / | tail -1 | tr -dc 0-9)"
 echo "disk_avail=$(df -h --output=avail / | tail -1 | tr -d " ")"
 echo "commit=$(git -C ~/ICSHoneypot rev-parse --short HEAD 2>/dev/null)"
@@ -82,9 +86,13 @@ for HOST in "${HOSTS[@]}"; do
     elif [ "$AGE" -gt "$CSV_MAX_AGE_MIN" ]; then
         PROBLEMS+=("newest CSV is ${AGE} min old")
     fi
+    OFFLINE=$(get csv_offline)
+    if [ "${OFFLINE:-0}" -gt 0 ]; then
+        PROBLEMS+=("${OFFLINE}/$(get csv_plcs) PLCs offline in the last CSV row (containers down?)")
+    fi
 
     # disk
-    if [ "$(get disk_pct)" -ge "$DISK_WARN_PCT" ]; then
+    if [ "$(get disk_pct)" -ge "${DISK_WARN_PCT}" ] 2>/dev/null; then
         WARNINGS+=("disk $(get disk_pct)% used, $(get disk_avail) free")
     fi
 
@@ -97,7 +105,7 @@ for HOST in "${HOSTS[@]}"; do
         printf "${YELLOW}%-16s WARN  %s${NC}\n" "$HOST" "$INFO"
         for W in "${WARNINGS[@]}"; do echo "    - $W"; done
     else
-        printf "${GREEN}%-16s OK    pcap and CSV are being written (%s)${NC}\n" "$HOST" "$INFO"
+        printf "${GREEN}%-16s OK    pcap and CSV are being written, PLCs online (%s)${NC}\n" "$HOST" "$INFO"
     fi
 done
 echo "==========================================="

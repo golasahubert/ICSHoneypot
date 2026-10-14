@@ -2,6 +2,13 @@
 
 Changelog of changes to the project. Newest entries on top.
 
+## 2026-10-15
+
+### data-collection: check-logs.sh also checks that the PLCs are online
+
+- A fresh CSV is not enough: on 2026-10-15 the rebuild failed on servers 1 and 6 (pip DNS error during `docker build` on 1, containerd layer export error on 6). `build_system.sh` had already removed the containers, so the honeypot was down, but `plc-collector` kept writing rows with every PLC `offline` and `check-logs.sh` reported OK.
+- `check-logs.sh` now fails if any PLC is `offline` in the last row of the newest CSV (counts the `._status` columns).
+
 ## 2026-10-14
 
 ### data-collection: rebuild-all installs and verifies the pcap capture
