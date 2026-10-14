@@ -2,6 +2,42 @@
 
 Changelog of changes to the project. Newest entries on top.
 
+## 2026-10-14
+
+### data-collection: rebuild-all installs and verifies the pcap capture
+
+- On 2026-10-14 servers 5 and 6 had no `capture.service` at all (no pcaps since they were set up). Server 6 also uses interface `eth0` (not `ens3`) and has no global IPv6, so the old `capture.sh` would not have worked there.
+- `capture.sh`:
+  - interface taken from the default route (or the first argument) instead of a fixed `ens3`;
+  - the filter is built only from the global addresses that exist (the old one became `host ` and failed without IPv6);
+  - `exec tcpdump` (systemd tracks tcpdump itself) and `-U`, so every packet is written at once.
+  - Same filter as before on servers 1–5 (IPv4 + global IPv6 of `ens3`), checked with a dry run on servers 1 and 6.
+- New `install_capture.sh` (run as root):
+  - installs `tcpdump` if missing, `capture.sh` as `/root/capture.sh` and `capture.service`, then enables the service;
+  - restarts it only if one of the files changed or it is not running;
+  - then verifies that a pcap is being written (prints journal lines on failure) and warns at ≥ 85% disk usage.
+- `rebuild-all.sh`:
+  - runs `install_capture.sh` right after `git pull`, before the build, so capture also runs if the build fails. New exit code 15: capture not running.
+  - New option `--capture-only`: only `git pull` and the capture install, no rebuild (containers keep running, no new measurement period).
+- `clean.sh`: matches pcaps of any interface (`eth0-*.pcap` on server 6).
+- Operational only (not visible to attackers). Servers 1–4 get a short capture restart (a few seconds, new pcap file) the first time, because `capture.sh` changed.
+
+### data-collection: log sync for all servers, git pull and log check in rebuild-all
+
+- `log-collector.sh` rewritten. It only listed server 1, under the SSH alias `singapore-001-DC2`, which does not exist in `~/.ssh/config`, and it needed a key `~/.ssh/deploys`. It now uses the `singapore-001` … `singapore-006` aliases (same as `rebuild-all.sh`) and pulls both `/var/log/tcpdump` (pcap) and `/var/log/plc_collector` (CSV) into `~/data-collection/hmi-deploy-logs/<variant>/{pcap,plc_collector}/`. Incremental (`rsync --append-verify`), never deletes local files, prints an OK/FAIL summary, accepts a host list. Needs `rsync` on the analysis machine.
+- New `check-logs.sh`: over SSH, checks per server that `capture.service` and `plc-collector` are active, that the newest pcap is at most 15 min old and the newest CSV at most 2 min old, and warns at ≥ 85% disk usage. Exit code = number of servers with a problem.
+- `rebuild-all.sh`:
+  - Before `build_system.sh` it runs `git pull --ff-only origin main` in the server's clone. Local edits to tracked files are stashed first (`git stash list` on the server). If the pull fails, nothing is rebuilt (new exit code 14).
+  - Why: on 2026-10-14 servers 2 and 4 were still on commit `00e9852` (before the collector service and restart policies), so their rebuild did not install `plc-collector`, and no CSVs have been written there since 2026-10-11/12. Servers 1, 3, 5 and 6 were on different commits too.
+  - After the summary it runs `check-logs.sh` for the rebuilt hosts and saves the result to `log-check.txt` in the rebuild log directory.
+- Operational only (not visible to attackers).
+
+### English only: comments and log messages translated
+
+- Polish comments translated in `1.Custom-HMI/kill_docker.sh`, `docker-compose.yml` of 4–6 and the three collector configs.
+- `plc_2_docker/comm_modbus.py` (all folders, still identical): Italian print messages translated and the variable `richiesta` renamed to `request`. Only container stdout changes; it takes effect on the next rebuild.
+- `CLAUDE.md`: rule that everything in the repo is written in English; data-collection section and known open issues updated (capture missing on 5 and 6, `clean.sh` not in cron, dead `copy_logs.sh` cron entry, OpenPLC not pinned, `pointLinks` only in 2/3/6).
+
 ## 2026-10-13
 
 ### 6.ScadaLTS-no-buttons: 2 GB swap created by build_system.sh

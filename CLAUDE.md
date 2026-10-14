@@ -11,7 +11,10 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
   - Changes visible to attackers (exposed ports, data scaling/noise, PLC logic, web pages) must be applied to **all** servers at once, between measurement periods.
   - Operational changes (restart policy, firewall, resource limits, capture/collector fixes) are safe at any time.
 - Data collected on each server:
-  - pcap: `data-collection/capture.sh` (tcpdump on `ens3`, systemd `capture.service`), pulled by `log-collector.sh` via rsync.
+  - pcap: `data-collection/capture.sh` (tcpdump on the default-route interface: `ens3` on 1–5, `eth0` on 6; systemd `capture.service`), pcaps in `/var/log/tcpdump/YYYY/MM/`, one file per 12 h. Installed and verified by `data-collection/install_capture.sh`, which `rebuild-all.sh` runs on every server (`./rebuild-all.sh --capture-only` does only that, without a rebuild); `build_system.sh` does not install it.
+  - Both pcaps and CSVs are pulled to the analysis machine by `data-collection/log-collector.sh` (rsync over the `singapore-00N` SSH aliases, into `~/data-collection/hmi-deploy-logs/<variant>/{pcap,plc_collector}/`).
+  - `data-collection/check-logs.sh` checks over SSH that every server is still writing pcaps and CSVs; `rebuild-all.sh` runs it after every rebuild.
+  - `data-collection/rebuild-all.sh` does `git pull --ff-only origin main` on each server before `build_system.sh` (local edits are stashed, see `git stash list`), so servers always build the current `main`.
   - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (installed automatically by every `build_system.sh`: at the end in 1–5, right after `docker-compose up` in 6; or by hand with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
 
 ## Per-variant differences to remember
@@ -29,11 +32,15 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
 - `build_system.sh` wipes all containers (`kill_docker.sh`), rebuilds and runs Playwright automation (OpenPLC "Save changes", SCADA import). On a running server, use `docker-compose up -d` for compose-only changes instead of a full rebuild.
 - All services use `restart: unless-stopped` (`scadalts` in 4 and 6: `always`).
 - Every change made to the repo must also be described in English in `UPDATE.md` (newest entries on top).
+- **Everything in the repo is written in English**: code, comments, log/print messages, commit messages, `UPDATE.md` and docs. Translate any non-English comment or message you touch (the user may talk to you in Polish; that does not change the repo language).
 
 ## Known open issues (not yet fixed)
 
 - PLC containers start snap7 (S7, port 102) and a fake Siemens web page (port 80), but no compose file publishes those ports.
 - No egress filtering or resource limits on containers; MySQL `3306` published with weak credentials in variants 4–6.
 - UDP between simulator and PLCs uses `pickle` (should be JSON).
-- `capture.sh` builds an invalid filter when the interface has no global IPv6.
-- `clean.sh` deletes pcaps after 7 days regardless of whether they were synced; collector CSVs are not synced by `log-collector.sh`.
+- `clean.sh` would delete pcaps after 7 days regardless of whether they were synced, but (checked 2026-10-14) it is not in cron on any server.
+- Until `rebuild-all.sh` (with `install_capture.sh`) is run on them, servers 5 and 6 have no `capture.service` (checked 2026-10-14), so there are no pcaps from them yet. Server 6 is at 88% disk usage.
+- Servers 2, 3 and 4 have a dead user cron entry `0 2 * * * ~/ICSHoneypot/data-collection/copy_logs.sh` (the script does not exist).
+- OpenPLC is not pinned (`#RUN git checkout ...` is commented out in the PLC Dockerfiles), so each server may run a different OpenPLC commit depending on when its Docker layer was built.
+- `automation/dataHMI.txt` in 4 and 5 has no `pointLinks`, while 2, 3 and 6 have 6. Setting a point from the HMI may therefore reach the PLC in 2/3/6 but not in 4/5 (to be checked in the lab). This is a confound in the 4 vs 6 comparison.
