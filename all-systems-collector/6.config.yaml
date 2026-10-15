@@ -66,16 +66,42 @@ plcs:
         count: 1
         datatype: "uint16"
         scale: 1.0
-      - name: "pump_status"
+      - name: "pump"
         type: "coil"
         address: 0
         count: 1
-        datatype: "uint16"
+      - name: "valve"
+        type: "coil"
+        address: 1
+        count: 1
+      - name: "request"
+        type: "coil"
+        address: 2
+        count: 1
+      - name: "underflow"
+        type: "coil"
+        address: 3
+        count: 1
+      - name: "overflow"
+        type: "coil"
+        address: 4
+        count: 1
+      - name: "low_1"
+        type: "holding"
+        address: 1025
+        count: 1
+        datatype: "int16"
+        scale: 1.0
+      - name: "high_1"
+        type: "holding"
+        address: 1026
+        count: 1
+        datatype: "int16"
         scale: 1.0
 
   - name: "PLC2 (T-202 Monitor)"
-    host: "172.25.0.4"          # 6: PLC2 container IP (Modbus not published on host)
-    port: 502
+    host: "172.25.0.4"
+    port: 502                  # 6: PLC2 container IP (Modbus not published on host)
     unit_id: 1
     points:
       - name: "water_level"
@@ -83,6 +109,30 @@ plcs:
         address: 0
         count: 1
         datatype: "uint16"
+        scale: 1.0
+      - name: "request"
+        type: "coil"
+        address: 0
+        count: 1
+      - name: "open_req"
+        type: "coil"
+        address: 1
+        count: 1
+      - name: "close_req"
+        type: "coil"
+        address: 2
+        count: 1
+      - name: "low_2"
+        type: "holding"
+        address: 1025
+        count: 1
+        datatype: "int16"
+        scale: 1.0
+      - name: "high_2"
+        type: "holding"
+        address: 1026
+        count: 1
+        datatype: "int16"
         scale: 1.0
 
   - name: "PLC3 (T-203 Control)"
@@ -96,3 +146,28 @@ plcs:
         count: 1
         datatype: "uint16"
         scale: 1.0
+      - name: "pump"
+        type: "coil"
+        address: 0
+        count: 1
+      - name: "low"
+        type: "coil"
+        address: 1
+        count: 1
+      - name: "high"
+        type: "coil"
+        address: 2
+        count: 1
+      - name: "low_3"
+        type: "holding"
+        address: 1025
+        count: 1
+        datatype: "int16"
+        scale: 1.0
+      - name: "high_3"
+        type: "holding"
+        address: 1026
+        count: 1
+        datatype: "int16"
+        scale: 1.0
+

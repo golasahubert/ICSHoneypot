@@ -16,6 +16,7 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
   - `data-collection/check-logs.sh` checks over SSH that every server is still writing pcaps and CSVs; `rebuild-all.sh` runs it after every rebuild.
   - `data-collection/rebuild-all.sh` does `git pull --ff-only origin main` on each server before `build_system.sh` (local edits are stashed, see `git stash list`), so servers always build the current `main`. It first pulls the local clone too and refuses to run with unpushed local commits.
   - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (installed automatically by every `build_system.sh`: at the end in 1–5, right after `docker-compose up` in 6; or by hand with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
+  - Since 2026-10-16 every PLC is read in full (was: only `water_level` for all, plus `pump_status` for PLC1). Per PLC: `water_level` (input reg 0), all coils named after the ST variables (PLC1 `pump`/`valve`/`request`/`underflow`/`overflow`, PLC2 `request`/`open_req`/`close_req`, PLC3 `pump`/`low`/`high`), and the two setpoints `low_i`/`high_i` (%MW1/%MW2 = holding regs 1025/1026, verified read-only on live PLCs). CSV columns grew and PLC1's `pump_status` became `pump`, so this date is a data-schema boundary.
 
 ## Per-variant differences to remember
 

@@ -2,6 +2,27 @@
 
 Changelog of changes to the project. Newest entries on top.
 
+## 2026-10-16
+
+### collector: read every point of all three PLCs (all variants)
+
+- `all-systems-collector/config.yaml` (variants 1–4), `5.config.yaml` (5) and `6.config.yaml` (6)
+  now read the full point set of PLC1, PLC2 and PLC3, not just `water_level` + PLC1 `pump_status`.
+  Per PLC: `water_level` (input reg 0, uint16), every coil named after its ST variable
+  (PLC1 `pump`/`valve`/`request`/`underflow`/`overflow` = coils 0–4; PLC2 `request`/`open_req`/`close_req`
+  = coils 0–2; PLC3 `pump`/`low`/`high` = coils 0–2) and both setpoints `low_i`/`high_i`
+  (%MW1/%MW2 = holding registers 1025/1026, int16).
+- Addresses verified read-only on live PLCs (server 2) with pymodbus: HR1025/1026 return the ST
+  defaults (PLC1 40/80, PLC2 10/20, PLC3 0/3) and all points read without error. The three files
+  stay identical except PLC2's host/port (502 / 3502 / container IP 172.25.0.4).
+- Operational only: the collector reads over localhost (PLC2 on server 6 over the container IP),
+  so nothing new is exposed to attackers. It lets us detect setpoint writes and forced coils directly
+  (zob. `literature/_applied-process-anomaly.md`).
+- **Data-schema boundary:** CSV gains ~14 columns and PLC1's `pump_status` column is renamed `pump`.
+  Record 2026-10-16 as the start of the richer measurement period.
+- Takes effect after `sudo bash all-systems-collector/install_service.sh <config>` on each server
+  (or a rebuild). No container rebuild needed — only the collector service restarts with the new config.
+
 ## 2026-10-15
 
 ### data-collection: rebuild-all.sh pulls the local clone first
