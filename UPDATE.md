@@ -4,6 +4,13 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-15
 
+### 4–6: MySQL no longer published on the public interface
+
+- `docker-compose.yml` in 4, 5 and 6 published MySQL as `3306:3306` with `root/root` and `scadalts/scadalts`. Internet bots logged in and dropped the data: on 2026-10-15 server 5 had a ransom database `RECOVER_YOUR_DATA` instead of `scadalts`, server 4 had no `scadalts` database left (and `root` saw only `information_schema`), server 6 was still intact. Scada-LTS then fails with "Table 'scadalts.…' doesn't exist", so the HMI worked only for a while after each rebuild.
+- Now `127.0.0.1:3306:3306`: Scada-LTS reaches MySQL over the compose network (`database`), nothing else on the host uses the port; for manual access use an SSH tunnel (`ssh -L 3306:127.0.0.1:3306 singapore-00N`). A host firewall (ufw) would not help, Docker bypasses it.
+- Visible to attackers (port 3306 closed on 4–6). It also removes a difference from 1–3, which never published MySQL. Takes effect on the next rebuild, which is needed anyway on 4 and 5 to restore the deleted database (`build_system.sh` removes the `db_storage` volume and re-imports).
+- `scadaLTS/` (unused) still publishes `3306`.
+
 ### data-collection: check-logs.sh also checks that the PLCs are online
 
 - A fresh CSV is not enough: on 2026-10-15 the rebuild failed on servers 1 and 6 (pip DNS error during `docker build` on 1, containerd layer export error on 6). `build_system.sh` had already removed the containers, so the honeypot was down, but `plc-collector` kept writing rows with every PLC `offline` and `check-logs.sh` reported OK.

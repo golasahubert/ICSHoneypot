@@ -37,7 +37,8 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
 ## Known open issues (not yet fixed)
 
 - PLC containers start snap7 (S7, port 102) and a fake Siemens web page (port 80), but no compose file publishes those ports.
-- No egress filtering or resource limits on containers; MySQL `3306` published with weak credentials in variants 4–6.
+- No egress filtering or resource limits on containers.
+- MySQL in 4–6 still has weak credentials (`root/root`, `scadalts/scadalts`). Since 2026-10-15 it is published only on `127.0.0.1`; before that, bots wiped the `scadalts` database on servers 4 and 5 (servers need a rebuild to pick up the fix and restore the DB).
 - UDP between simulator and PLCs uses `pickle` (should be JSON).
 - `clean.sh` would delete pcaps after 7 days regardless of whether they were synced, but (checked 2026-10-14) it is not in cron on any server.
 - Until `rebuild-all.sh` (with `install_capture.sh`) is run on them, servers 5 and 6 have no `capture.service` (checked 2026-10-14), so there are no pcaps from them yet. Server 6 is at 88% disk usage.
