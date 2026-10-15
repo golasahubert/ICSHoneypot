@@ -6,6 +6,8 @@
 #   ./rebuild-all.sh singapore-002 singapore-005  # only the listed hosts
 #   ./rebuild-all.sh --capture-only [hosts...]    # only git pull + pcap capture, no rebuild
 #
+# First the local clone is updated (git pull --ff-only origin main); the run
+# stops if that fails or if local main has unpushed commits.
 # On each server: git pull of origin/main, install/verify the pcap capture
 # (data-collection/install_capture.sh), build_system.sh, container check.
 # At the end check-logs.sh verifies that pcaps and CSVs are being written.
@@ -25,6 +27,7 @@ VPS_LIST=(
     "singapore-006  ~/ICSHoneypot/6.ScadaLTS-no-buttons"
 )
 
+ALL_ARGS=("$@")  # kept for the re-exec after the local git pull
 MODE="build"
 if [ "${1:-}" = "--capture-only" ]; then
     MODE="capture-only"
@@ -44,6 +47,34 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
+
+# Update the local clone first, so this script and check-logs.sh are current
+# and match the origin/main that the servers are about to pull
+if [ -z "${REBUILD_ALL_PULLED:-}" ]; then
+    REPO_DIR="$(git -C "$(dirname "$0")" rev-parse --show-toplevel)" || exit 1
+    BRANCH="$(git -C "$REPO_DIR" rev-parse --abbrev-ref HEAD)"
+    if [ "$BRANCH" != "main" ]; then
+        echo -e "${RED}[!] Local repo is on branch '$BRANCH', switch to main first (servers build origin/main)${NC}"
+        exit 1
+    fi
+    echo "[+] Local repo: git pull --ff-only origin main"
+    OLD_HEAD="$(git -C "$REPO_DIR" rev-parse HEAD)"
+    GIT_TERMINAL_PROMPT=0 git -C "$REPO_DIR" pull -q --ff-only origin main \
+        || { echo -e "${RED}[!] Local git pull failed, nothing was rebuilt${NC}"; exit 1; }
+    AHEAD="$(git -C "$REPO_DIR" rev-list --count origin/main..HEAD)"
+    if [ "$AHEAD" -gt 0 ]; then
+        echo -e "${RED}[!] Local main has $AHEAD unpushed commit(s), the servers would not get them. Push first.${NC}"
+        exit 1
+    fi
+    if [ -n "$(git -C "$REPO_DIR" status --porcelain --untracked-files=no)" ]; then
+        echo -e "${YELLOW}[!] Local repo has uncommitted changes, the servers will build origin/main without them${NC}"
+    fi
+    echo "[+] Local repo at $(git -C "$REPO_DIR" log -1 --format='%h %s')"
+    # restart with the pulled version of this script if the pull changed anything
+    if [ "$(git -C "$REPO_DIR" rev-parse HEAD)" != "$OLD_HEAD" ]; then
+        REBUILD_ALL_PULLED=1 exec bash "$0" "${ALL_ARGS[@]}"
+    fi
+fi
 
 mkdir -p "$LOG_DIR"
 

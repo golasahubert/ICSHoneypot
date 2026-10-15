@@ -14,7 +14,7 @@ Research ICS honeypots imitating a simplified SWaT water-treatment process: 3 Op
   - pcap: `data-collection/capture.sh` (tcpdump on the default-route interface: `ens3` on 1–5, `eth0` on 6; systemd `capture.service`), pcaps in `/var/log/tcpdump/YYYY/MM/`, one file per 12 h. Installed and verified by `data-collection/install_capture.sh`, which `rebuild-all.sh` runs on every server (`./rebuild-all.sh --capture-only` does only that, without a rebuild); `build_system.sh` does not install it.
   - Both pcaps and CSVs are pulled to the analysis machine by `data-collection/log-collector.sh` (rsync over the `singapore-00N` SSH aliases, into `~/data-collection/hmi-deploy-logs/<variant>/{pcap,plc_collector}/`).
   - `data-collection/check-logs.sh` checks over SSH that every server is still writing pcaps and CSVs; `rebuild-all.sh` runs it after every rebuild.
-  - `data-collection/rebuild-all.sh` does `git pull --ff-only origin main` on each server before `build_system.sh` (local edits are stashed, see `git stash list`), so servers always build the current `main`.
+  - `data-collection/rebuild-all.sh` does `git pull --ff-only origin main` on each server before `build_system.sh` (local edits are stashed, see `git stash list`), so servers always build the current `main`. It first pulls the local clone too and refuses to run with unpushed local commits.
   - Modbus process snapshots: `all-systems-collector/final_collector.py`, run as systemd service `plc-collector` (installed automatically by every `build_system.sh`: at the end in 1–5, right after `docker-compose up` in 6; or by hand with `sudo bash all-systems-collector/install_service.sh`), CSV in `/var/log/plc_collector/MM/DD/`, one file per 6h slot (4 per day).
 
 ## Per-variant differences to remember

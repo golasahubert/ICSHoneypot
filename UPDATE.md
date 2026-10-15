@@ -4,6 +4,12 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-15
 
+### data-collection: rebuild-all.sh pulls the local clone first
+
+- Before doing anything, `rebuild-all.sh` now runs `git pull --ff-only origin main` in the local clone it lives in, so the script itself and `check-logs.sh` are current. If the pull brought new commits, the script restarts itself with the pulled version (same arguments).
+- It stops before touching any server if the local clone is not on `main`, if the pull fails, or if local `main` has unpushed commits (the servers pull `origin/main` and would not get them). Uncommitted local changes only give a warning.
+- Operational only.
+
 ### 4–6: MySQL no longer published on the public interface
 
 - `docker-compose.yml` in 4, 5 and 6 published MySQL as `3306:3306` with `root/root` and `scadalts/scadalts`. Internet bots logged in and dropped the data: on 2026-10-15 server 5 had a ransom database `RECOVER_YOUR_DATA` instead of `scadalts`, server 4 had no `scadalts` database left (and `root` saw only `information_schema`), server 6 was still intact. Scada-LTS then fails with "Table 'scadalts.…' doesn't exist", so the HMI worked only for a while after each rebuild.
