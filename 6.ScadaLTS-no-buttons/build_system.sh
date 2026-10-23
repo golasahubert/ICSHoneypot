@@ -26,22 +26,6 @@ else
   sudo apt install -y python3-venv docker.io docker-compose
 fi
 
-# Server 6 has 1 GB RAM: without swap the machine freezes while the venvs and
-# Chromium are installed next to the starting stack. Only added if no swap is active.
-echo "[+] Ensuring swap is enabled..."
-if [ -z "$(swapon --show --noheadings)" ]; then
-  if [ ! -f /swapfile ]; then
-    echo "[+] Creating 2 GB /swapfile..."
-    sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-  fi
-  sudo swapon /swapfile
-  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null
-else
-  echo "[=] Swap already active, skipping"
-fi
-
 # Server 6 has a 15 GB disk: a build of the PLC/simulator images does not fit next
 # to the old images and their build cache. The images are therefore rebuilt only
 # when their build context changed since the last successful build (or with
@@ -79,6 +63,35 @@ fi
 echo "[+] Ensuring that all docker networks are dead"
 sudo docker-compose down
 sudo docker network prune -f
+
+# Server 6 has 1 GB RAM: without swap the machine freezes while the venvs and
+# Chromium are installed next to the starting stack. The /swapfile is 1 GB (2 GB
+# until 2026-10-23, too much for the 15 GB disk) and is created or resized here,
+# while the stack is stopped and swapoff has enough RAM. Skipped if another swap
+# is active.
+SWAP_MB=1024
+echo "[+] Ensuring a ${SWAP_MB} MB /swapfile is enabled..."
+if swapon --show=NAME --noheadings | grep -qvx /swapfile; then
+  echo "[=] Other swap active, skipping"
+else
+  if [ -f /swapfile ] && [ "$(stat -c %s /swapfile)" -ne $((SWAP_MB * 1024 * 1024)) ]; then
+    echo "[+] Resizing /swapfile to ${SWAP_MB} MB..."
+    if ! swapon --show=NAME --noheadings | grep -qx /swapfile || sudo swapoff /swapfile; then
+      sudo rm -f /swapfile
+    else
+      echo "[!] swapoff failed (not enough RAM?), keeping the old /swapfile"
+    fi
+  fi
+  if [ ! -f /swapfile ]; then
+    sudo fallocate -l ${SWAP_MB}M /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=$SWAP_MB
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+  fi
+  if ! swapon --show=NAME --noheadings | grep -qx /swapfile; then
+    sudo swapon /swapfile
+  fi
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null
+fi
 
 # Nothing below is used by the new stack: kill_docker.sh removed the stopped
 # containers, and dangling images are leftovers of earlier or failed builds

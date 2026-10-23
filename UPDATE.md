@@ -4,6 +4,13 @@ Changelog of changes to the project. Newest entries on top.
 
 ## 2026-10-23
 
+### 6: swap reduced from 2 GB to 1 GB
+
+- `6.ScadaLTS-no-buttons/build_system.sh` now keeps `/swapfile` at 1 GB to save disk space on the 15 GB disk. An existing swap file of another size is turned off, removed and recreated. The resize is skipped with a warning if `swapoff` fails, and the step is skipped if some other swap is active.
+- The swap step moved from the start of the script to after the stack is stopped (`kill_docker.sh`, `docker-compose down`). With the stack running, `swapoff` cannot work: on 2026-10-23, 611 MB of swap was in use and only 134 MB of RAM was available. The swap is still enabled before the stack and Playwright start, which is why it was added.
+- Memory gets tighter: 937 MB RAM + 1 GB swap. The running stack used ~1.4 GB (803 MB RAM + 611 MB swap), so Playwright/Chromium during a rebuild has ~0.5 GB left. If the OOM killer hits during a rebuild, go back to 2 GB (`SWAP_MB`).
+- Operational only. Takes effect on the next `build_system.sh` run on server 6.
+
 ### All variants: only the HMI (and PLC2 Modbus on 5) is public
 
 - **Visible to attackers and a change to the study design: deploy it to all servers at once (`rebuild-all.sh`), and treat the deploy date as a measurement-period boundary.**
