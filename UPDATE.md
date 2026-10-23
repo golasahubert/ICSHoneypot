@@ -2,6 +2,16 @@
 
 Changelog of changes to the project. Newest entries on top.
 
+## 2026-10-23
+
+### 6: build_system.sh reuses images and removes unused Docker data
+
+- Server 6 (15 GB disk) ran out of space. Container logs and `mango.log` had filled it, and a rebuild then failed twice: PLC3 hit "not enough free space" in `apt-get`, and PLC1 recompiled OpenPLC from scratch and failed with "no space left on device". The build cache had been lost to a `docker image prune`: with Docker 29's containerd image store, the legacy builder's intermediate images count as dangling. The honeypot was down from ~12:00 that day.
+- `6.ScadaLTS-no-buttons/build_system.sh` now rebuilds the PLC/simulator images only when their build context (`plc_*_docker`, `physical_sim_docker`) changed since the last successful build, or with `bash build_system.sh --rebuild`. The context hash is stored in the untracked `.images_built`. A rebuild first removes the old project images, so it starts from scratch and needs a few GB free (the script warns below 5 GB). Otherwise the existing images are reused (`docker-compose up -d --no-build`), and a run is a clean restart that adds nothing to the disk. If there is no stamp yet and all images exist, they are adopted as current. On server 6 this is correct: the images match `main` (PLC2 was built after the last change to `plc_2_docker`, and the other contexts are unchanged since 2026-10-14).
+- Every run also removes dangling images (leftovers of earlier or failed builds), anonymous volumes and the APT cache, and prints `df -h /`.
+- Side effect: restarts on 6 no longer re-run the unpinned `git clone` of OpenPLC, so the PLC software on 6 only changes when its build context changes.
+- Operational only, nothing visible to attackers. Variants 1–5 are unchanged (their disks are larger). `rebuild-all.sh` keeps working, because a pushed change to a build context triggers the rebuild on 6 automatically.
+
 ## 2026-10-16
 
 ### collector: read every point of all three PLCs (all variants)

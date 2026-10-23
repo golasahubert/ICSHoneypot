@@ -13,3 +13,4 @@ all-systems-collector/logs
 all-systems-collector/venv
 **/.playwright_deps
 all-systems-collector/.venv
+**/.images_built
