@@ -69,9 +69,8 @@ services:
     container_name: lts_plc1_sswat
     restart: unless-stopped
     ports:
-      - "2502:502"
-      - "28080:8080"
-      - "29090:9090"
+      - "127.0.0.1:2502:502"
+      - "127.0.0.1:28080:8080"
     networks:
       lts_network:
         ipv4_address: 172.25.0.3
@@ -83,8 +82,7 @@ services:
     restart: unless-stopped
     ports:
       # 6.ScadaLTS-no-buttons: PLC2 Modbus (502) is not published on the host
-      - "38080:8080"
-      - "39090:9090"
+      - "127.0.0.1:38080:8080"
     networks:
       lts_network:
         ipv4_address: 172.25.0.4
@@ -95,9 +93,8 @@ services:
     container_name: lts_plc3_sswat
     restart: unless-stopped
     ports:
-      - "4502:502"
-      - "48080:8080"
-      - "49090:9090"
+      - "127.0.0.1:4502:502"
+      - "127.0.0.1:48080:8080"
     networks:
       lts_network:
         ipv4_address: 172.25.0.5
@@ -107,10 +104,6 @@ services:
       context: ./physical_sim_docker
     container_name: lts_sim_sswat
     restart: unless-stopped
-    ports:
-      - "5502:502"
-      - "58080:8080"
-      - "59090:9090"
     networks:
       lts_network:
         ipv4_address: 172.25.0.6

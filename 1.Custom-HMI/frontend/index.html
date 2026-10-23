@@ -127,8 +127,8 @@
     const plcCardsContainer = document.getElementById('plc-cards-container');
     const plcNames = ['PLC1 (T-201 Control)', 'PLC2 (T-202 Monitor)', 'PLC3 (T-203 Control)'];
 
-    // Use current hostname for API requests
-    const apiUrl = `http://${window.location.hostname}:3000/api/data`;
+    // Same origin: nginx proxies /api/ to the backend
+    const apiUrl = '/api/data';
 
     const plcConfig = {
         'PLC1 (T-201 Control)': { max: 100, tankId: 'tank-201-water' },

@@ -61,11 +61,7 @@ systemctl status plc-collector
 journalctl -u plc-collector -f
 ```
 
-On server 5 (`5.NewScada`) PLC2 is published on port `3502` instead of `502`, so use the dedicated config:
-
-```bash
-sudo bash install_service.sh 5.config.yaml
-```
+Variants 1–5 use `config.yaml`: every PLC is read over localhost (PLC1 `2502`, PLC2 `502`, PLC3 `4502`; published on `127.0.0.1` only, except PLC2 `502` on server 5, which is public).
 
 On server 6 (`6.ScadaLTS-no-buttons`) PLC2 Modbus is not published on the host, so `6.config.yaml` reads it from the container IP `172.25.0.4:502`:
 

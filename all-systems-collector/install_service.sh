@@ -4,7 +4,7 @@ set -euo pipefail
 # install_service.sh - install the collector as a systemd service (plc-collector)
 # that runs continuously and is restarted automatically (also after reboot).
 # Usage: sudo bash install_service.sh [config file]   (default: config.yaml,
-#        on server 5 use: sudo bash install_service.sh 5.config.yaml)
+#        on server 6 use: sudo bash install_service.sh 6.config.yaml)
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Error: run as root (sudo bash install_service.sh)" >&2

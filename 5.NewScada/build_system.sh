@@ -75,5 +75,4 @@ sudo bash start_system.sh
 echo "[OK] Restarting Complete."
 
 echo "[+] Installing PLC data collector service (plc-collector)..."
-# Server 5 publishes PLC2 Modbus on host port 3502, hence 5.config.yaml
-sudo bash ../all-systems-collector/install_service.sh 5.config.yaml
+sudo bash ../all-systems-collector/install_service.sh
